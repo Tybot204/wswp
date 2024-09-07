@@ -3,32 +3,50 @@ if (process.env.NODE_ENV === "development") {
   require("dotenv").config();
 }
 
-import { ChatInputCommandInteraction, Client, Events, GatewayIntentBits, REST, Routes, SlashCommandBuilder } from "discord.js"
+import { PrismaClient } from "@prisma/client";
+import { ChatInputCommandInteraction, Client, Events, GatewayIntentBits, REST, Routes, SlashCommandBuilder } from "discord.js";
 
 import { addGame } from "./commands/addGame";
+import { listGames } from "./commands/listGames";
 
 export interface Command {
   builder: SlashCommandBuilder;
   execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
 }
 
+export const prisma = new PrismaClient();
+
 const client = new Client({ intents: GatewayIntentBits.Guilds });
 
-client.once(Events.ClientReady, readyClient => {
+client.once(Events.ClientReady, (readyClient) => {
   console.log(`Logged in as ${readyClient.user?.tag}`);
 });
 
-client.on(Events.InteractionCreate, async interaction => {
+client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
-  await addGame.execute(interaction);
-})
+
+  const command = interaction.commandName;
+  switch (command) {
+    case "addgame":
+      await addGame.execute(interaction);
+      break;
+    case "listgames":
+      await listGames.execute(interaction);
+      break;
+    default:
+      break;
+  };
+});
 
 client.login(process.env.DISCORD_TOKEN);
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN!);
 (async () => {
   try {
-    await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID!), { body: [addGame.builder.toJSON()] });
+    await rest.put(
+      Routes.applicationCommands(process.env.DISCORD_CLIENT_ID!),
+      { body: [addGame.builder.toJSON(), listGames.builder.toJSON()] },
+    );
     console.log("Successfully registered application commands.");
   } catch (error) {
     console.error(error);
