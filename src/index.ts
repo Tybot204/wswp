@@ -6,10 +6,7 @@ if (process.env.NODE_ENV === "development") {
 import { PrismaClient } from "@prisma/client";
 import { ChatInputCommandInteraction, Client, Events, GatewayIntentBits, REST, Routes, SlashCommandBuilder } from "discord.js";
 
-import { addGame } from "./commands/addGame";
-import { listGames } from "./commands/listGames";
-
-import { registerUser } from "./util/registerUser";
+import { commandMap } from "./commands";
 
 export interface Command {
   builder: SlashCommandBuilder;
@@ -27,18 +24,10 @@ client.once(Events.ClientReady, (readyClient) => {
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
-  const command = interaction.commandName;
-  switch (command) {
-    case "addgame":
-      await registerUser(interaction.user.id, interaction.user.displayName);
-      await addGame.execute(interaction);
-      break;
-    case "listgames":
-      await listGames.execute(interaction);
-      break;
-    default:
-      break;
-  };
+  const command: Command | undefined = commandMap[interaction.commandName];
+  if (!command) return;
+
+  await command.execute(interaction);
 });
 
 client.login(process.env.DISCORD_TOKEN);
@@ -49,7 +38,7 @@ const rest = new REST().setToken(process.env.DISCORD_TOKEN!);
   try {
     await rest.put(
       Routes.applicationCommands(process.env.DISCORD_CLIENT_ID!),
-      { body: [addGame.builder.toJSON(), listGames.builder.toJSON()] },
+      { body: Object.values(commandMap).map(command => command.builder.toJSON()) },
     );
     console.log("Successfully registered application commands.");
   } catch (error) {

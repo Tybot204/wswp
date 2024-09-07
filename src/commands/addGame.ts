@@ -2,6 +2,8 @@ import { SlashCommandBuilder } from "discord.js";
 
 import { Command, prisma } from "..";
 
+import { registerUser } from "../util/registerUser";
+
 const builder = new SlashCommandBuilder().setName("addgame").setDescription("Add a game to the database.");
 builder.addStringOption(option => option.setName("name").setDescription("The name of the game to add."));
 builder.addIntegerOption(option => option.setName("numplayers").setDescription("The number of players the game supports."));
@@ -21,13 +23,9 @@ export const addGame: Command = {
       return;
     };
 
-    const user = await prisma.user.findUnique({ where: { discordId: interaction.user.id } });
-    if (!user) {
-      await interaction.reply("Failed to find user. This is a bug.");
-      return;
-    };
-
+    const user = await registerUser(interaction.user);
     await prisma.game.create({ data: { name, numPlayers, createdById: user.id } });
+
     await interaction.reply(`${name} added!`);
   },
 };
