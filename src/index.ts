@@ -22,15 +22,12 @@ client.once(Events.ClientReady, (readyClient) => {
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
-  if (interaction.isChatInputCommand()) {
-    const command: Command | undefined = commandMap[interaction.commandName];
-    if (!command) return;
+  if (!interaction.isChatInputCommand()) return;
 
-    await command.execute(interaction);
-  }
-  // } else if (interaction.isButton()) {
-  //   console.log(interaction);
-  // }
+  const command: Command | undefined = commandMap[interaction.commandName];
+  if (!command) return;
+
+  await command.execute(interaction);
 });
 
 client.login(process.env.DISCORD_TOKEN);
