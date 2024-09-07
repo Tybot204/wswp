@@ -3,8 +3,8 @@ if (process.env.NODE_ENV === "development") {
   require("dotenv").config();
 }
 
-import { PrismaClient } from "@prisma/client";
 import { ChatInputCommandInteraction, Client, Events, GatewayIntentBits, REST, Routes, SlashCommandBuilder } from "discord.js";
+import { PrismaClient } from "@prisma/client";
 
 import { commandMap } from "./commands";
 
