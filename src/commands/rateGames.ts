@@ -12,11 +12,11 @@ export const rateGames: Command = {
     const user = await registerUser(interaction.user);
     const games = await prisma.game.findMany({ where: { ratings: { none: { userId: user.id } } } });
 
-    const buttonOne = new ButtonBuilder().setCustomId("1").setLabel("1").setStyle(ButtonStyle.Primary);
-    const buttonTwo = new ButtonBuilder().setCustomId("2").setLabel("2").setStyle(ButtonStyle.Primary);
-    const buttonThree = new ButtonBuilder().setCustomId("3").setLabel("3").setStyle(ButtonStyle.Primary);
-    const buttonFour = new ButtonBuilder().setCustomId("4").setLabel("4").setStyle(ButtonStyle.Primary);
-    const buttonFive = new ButtonBuilder().setCustomId("5").setLabel("5").setStyle(ButtonStyle.Primary);
+    const buttonOne = new ButtonBuilder().setCustomId("1").setLabel("1").setStyle(ButtonStyle.Danger);
+    const buttonTwo = new ButtonBuilder().setCustomId("2").setLabel("2").setStyle(ButtonStyle.Secondary);
+    const buttonThree = new ButtonBuilder().setCustomId("3").setLabel("3").setStyle(ButtonStyle.Secondary);
+    const buttonFour = new ButtonBuilder().setCustomId("4").setLabel("4").setStyle(ButtonStyle.Secondary);
+    const buttonFive = new ButtonBuilder().setCustomId("5").setLabel("5").setStyle(ButtonStyle.Success);
 
     let game = games.shift();
 
