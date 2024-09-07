@@ -9,6 +9,8 @@ import { ChatInputCommandInteraction, Client, Events, GatewayIntentBits, REST, R
 import { addGame } from "./commands/addGame";
 import { listGames } from "./commands/listGames";
 
+import { registerUser } from "./util/registerUser";
+
 export interface Command {
   builder: SlashCommandBuilder;
   execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
@@ -28,6 +30,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   const command = interaction.commandName;
   switch (command) {
     case "addgame":
+      await registerUser(interaction.user.id, interaction.user.displayName);
       await addGame.execute(interaction);
       break;
     case "listgames":
@@ -40,6 +43,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.login(process.env.DISCORD_TOKEN);
 
+// Register all application commands
 const rest = new REST().setToken(process.env.DISCORD_TOKEN!);
 (async () => {
   try {
