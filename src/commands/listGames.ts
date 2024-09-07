@@ -10,7 +10,6 @@ export const listGames: Command = {
     const games = await prisma.game.findMany();
 
     const reply = `**Game List:**\n${games.map(game => `${game.name} - ${game.numPlayers} players`).join("\n")}`;
-
     await interaction.reply(reply);
   },
 };

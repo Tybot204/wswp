@@ -1,8 +1,10 @@
+import { User } from "discord.js";
+
 import { prisma } from "..";
 
-export const registerUser = async (discordId: string, discordName: string) => {
-  const existingUser = await prisma.user.findUnique({ where: { discordId } });
-  if (existingUser) return;
+export const registerUser = async (user: User) => {
+  const existingUser = await prisma.user.findUnique({ where: { discordId: user.id } });
+  if (existingUser) return existingUser;
 
-  await prisma.user.create({ data: { discordId, discordName } });
+  return await prisma.user.create({ data: { discordId: user.id, discordName: user.displayName } });
 };
