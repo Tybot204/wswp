@@ -32,17 +32,22 @@ export const rateGames: Command = {
     });
 
     while (true) {
-      const ratingChoice = await reply.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 15000 });
+      try {
+        const ratingChoice = await reply.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 15000 });
 
-      await prisma.rating.create({ data: { gameId: game.id, score: parseInt(ratingChoice.customId), userId: user.id } });
+        await prisma.rating.create({ data: { gameId: game.id, score: parseInt(ratingChoice.customId), userId: user.id } });
 
-      game = games.shift();
-      if (!game) {
-        await ratingChoice.update({ content: "Finished rating all games.", components: [] });
+        game = games.shift();
+        if (!game) {
+          await ratingChoice.update({ content: "Finished rating all games.", components: [] });
+          break;
+        }
+
+        await ratingChoice.update({ content: `Please rate ${game.name}` });
+      } catch {
+        await reply.edit({ content: "Timed out. Run the /rategames command again to resume.", components: [] });
         break;
       }
-
-      await ratingChoice.update({ content: `Please rate ${game.name}` });
     }
   },
 };
