@@ -1,7 +1,7 @@
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import nodeExternals from "webpack-node-externals";
 import { resolve } from "path";
 import webpack from "webpack";
-import nodeExternals from "webpack-node-externals";
 
 const config: webpack.Configuration = {
   devtool: "source-map",

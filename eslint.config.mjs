@@ -14,4 +14,5 @@ export default [
     semi: true,
     braceStyle: "1tbs",
   }),
+  { rules: { "sort-imports": ["error", { allowSeparatedGroups: true }] } },
 ];
