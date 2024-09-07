@@ -21,7 +21,13 @@ export const addGame: Command = {
       return;
     };
 
-    await prisma.game.create({ data: { name, numPlayers } });
+    const user = await prisma.user.findUnique({ where: { discordId: interaction.user.id } });
+    if (!user) {
+      await interaction.reply("Failed to find user. This is a bug.");
+      return;
+    };
+
+    await prisma.game.create({ data: { name, numPlayers, createdById: user.id } });
     await interaction.reply(`${name} added!`);
   },
 };
