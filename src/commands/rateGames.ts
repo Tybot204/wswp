@@ -1,8 +1,25 @@
-import { ButtonBuilder, ButtonStyle, ComponentType, SlashCommandBuilder } from "discord.js";
+import { APIEmbed, ButtonBuilder, ButtonStyle, ComponentType, SlashCommandBuilder } from "discord.js";
+
+import { Game } from "@prisma/client";
 
 import { Command, prisma } from "..";
 
 import { registerUser } from "../util/registerUser";
+
+const gameEmbedBuilder = (game: Game): APIEmbed => {
+  return {
+    description: game.description ?? undefined,
+    fields: [
+      { inline: true, name: "Number of players", value: game.numPlayers.toString() },
+      { inline: true, name: "Is free?", value: game.isFree ? "Yes" : "No" },
+    ],
+    footer: { text: "Rate the game from 1 to 5." },
+    image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
+    title: game.name,
+    thumbnail: game.thumbnailImageURL ? { url: game.thumbnailImageURL } : undefined,
+    url: game.gameURL ?? undefined,
+  };
+};
 
 const builder = new SlashCommandBuilder().setName("rategames").setDescription("Rate all unrated games for your current user.");
 
@@ -21,31 +38,31 @@ export const rateGames: Command = {
     let game = games.shift();
 
     if (!game) {
-      await interaction.reply("No games to rate.");
+      await interaction.reply("No new games to rate.");
       return;
     }
 
     const reply = await interaction.reply({
       components: [{ components: [buttonOne, buttonTwo, buttonThree, buttonFour, buttonFive], type: ComponentType.ActionRow }],
-      content: `Please rate ${game.name}`,
+      embeds: [gameEmbedBuilder(game)],
       ephemeral: true,
     });
 
     while (true) {
       try {
-        const ratingChoice = await reply.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 15000 });
+        const ratingChoice = await reply.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 30000 });
 
         await prisma.rating.create({ data: { gameId: game.id, score: parseInt(ratingChoice.customId), userId: user.id } });
 
         game = games.shift();
         if (!game) {
-          await ratingChoice.update({ content: "Finished rating all games.", components: [] });
+          await ratingChoice.update({ content: "Finished rating all games!", components: [], embeds: [] });
           break;
         }
 
-        await ratingChoice.update({ content: `Please rate ${game.name}` });
+        await ratingChoice.update({ embeds: [gameEmbedBuilder(game)] });
       } catch {
-        await reply.edit({ content: "Timed out. Run the /rategames command again to resume.", components: [] });
+        await reply.edit({ content: "Rating timed out. Type `/rategames` again to resume.", components: [], embeds: [] });
         break;
       }
     }
