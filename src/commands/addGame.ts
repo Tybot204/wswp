@@ -23,24 +23,33 @@ interface SteamGameDetails {
 }
 
 const builder = new SlashCommandBuilder().setName("addgame").setDescription("Add a game to the database.");
-builder.addStringOption(option => option.setName("name").setDescription("The name of the game to add."));
-builder.addIntegerOption(option => option.setName("numplayers").setDescription("The number of players the game supports."));
-builder.addStringOption(option => option.setName("url").setDescription("A URL to the game. Steam store pages will pull information about the game."));
+
+builder.addStringOption(option =>
+  option.setName("name")
+    .setDescription("The name of the game to add.")
+    .setRequired(true),
+);
+
+builder.addIntegerOption(option =>
+  option.setName("numplayers")
+    .setDescription("The number of players the game supports.")
+    .setRequired(true)
+    .setMinValue(2),
+);
+
+builder.addStringOption(option =>
+  option.setName("url")
+    .setDescription("A URL to the game. Steam store pages will pull information about the game."),
+);
 
 export const addGame: Command = {
   builder,
   execute: async (interaction) => {
     const name = interaction.options.getString("name");
-    if (!name) {
-      await interaction.reply("You must provide a name for the game.");
-      return;
-    };
-
     const numPlayers = interaction.options.getInteger("numplayers");
-    if (!numPlayers) {
-      await interaction.reply("You must provide the number of players the game supports.");
-      return;
-    };
+
+    // Ensure required options are provided. This should never happen.
+    if (!name || !numPlayers) return;
 
     const user = await registerUser(interaction.user);
 
@@ -61,7 +70,8 @@ export const addGame: Command = {
           gameData.thumbnailImageURL = response.capsule_image;
         } catch {
           // Do nothing. Steam integration is for bonus information and is not required.
-          // TODO: Should we alert the user that the Steam integration failed? What if they provided a non-Steam URL?
+          // TODO: Should we alert the user that the Steam integration failed?
+          //       What if they provided a non-Steam URL?
         }
       }
     }
