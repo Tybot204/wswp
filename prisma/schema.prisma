@@ -44,7 +44,7 @@ model Rating {
   score Int
 
   gameId String @map("game_id") @db.Uuid
-  game   Game   @relation(fields: [gameId], references: [id])
+  game   Game   @relation(fields: [gameId], onDelete: Cascade, references: [id])
 
   userId String @map("user_id") @db.Uuid
   user   User   @relation(fields: [userId], references: [id])

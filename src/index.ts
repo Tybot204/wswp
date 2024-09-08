@@ -4,6 +4,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 import {
+  AutocompleteInteraction,
   ChatInputCommandInteraction,
   Client,
   Events,
@@ -18,6 +19,7 @@ import SteamAPI from "steamapi";
 import { commandMap } from "./commands";
 
 export interface Command {
+  autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
   builder: SlashCommandBuilder;
   execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
 }
@@ -33,12 +35,11 @@ client.once(Events.ClientReady, (readyClient) => {
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
-
-  const command: Command | undefined = commandMap[interaction.commandName];
-  if (!command) return;
-
-  await command.execute(interaction);
+  if (interaction.isChatInputCommand()) {
+    await commandMap[interaction.commandName].execute?.(interaction);
+  } else if (interaction.isAutocomplete()) {
+    await commandMap[interaction.commandName].autocomplete?.(interaction);
+  }
 });
 
 client.login(process.env.DISCORD_TOKEN);
