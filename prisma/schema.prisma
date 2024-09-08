@@ -21,6 +21,10 @@ model Game {
   numPlayers Int     @map("num_players")
   released   Boolean @default(true)
 
+  bannerImageURL    String? @map("banner_image_url")
+  thumbnailImageURL String? @map("thumbnail_image_url")
+  gameURL           String? @map("game_url")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
