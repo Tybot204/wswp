@@ -3,7 +3,12 @@ import { APIEmbedField, SlashCommandBuilder } from "discord.js";
 import { Command, prisma } from "..";
 
 const builder = new SlashCommandBuilder().setName("whatshouldweplay").setDescription("Give me a game to play with the given people.");
-builder.addStringOption(option => option.setName("players").setDescription("Names of the players participating."));
+
+builder.addStringOption(option =>
+  option.setName("players")
+    .setDescription("Names of the players participating.")
+    .setRequired(true),
+);
 
 export const whatShouldWePlay: Command = {
   builder,
