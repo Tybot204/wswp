@@ -22,6 +22,7 @@ model Game {
   released   Boolean @default(true)
 
   bannerImageURL    String? @map("banner_image_url")
+  description       String?
   thumbnailImageURL String? @map("thumbnail_image_url")
   gameURL           String? @map("game_url")
 

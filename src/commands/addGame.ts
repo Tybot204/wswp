@@ -6,6 +6,7 @@ import { registerUser } from "../util/registerUser";
 
 interface GameData {
   createdById: string;
+  description?: string;
   isFree?: boolean;
   gameURL?: string;
   name: string;
@@ -18,6 +19,7 @@ interface SteamGameDetails {
   capsule_image: string;
   is_free: boolean;
   header_image: string;
+  short_description: string;
 }
 
 const builder = new SlashCommandBuilder().setName("addgame").setDescription("Add a game to the database.");
@@ -52,6 +54,8 @@ export const addGame: Command = {
       if (steamGameId) {
         try {
           const response = await steam.getGameDetails(steamGameId) as unknown as SteamGameDetails;
+
+          gameData.description = response.short_description;
           gameData.isFree = response.is_free;
           gameData.bannerImageURL = response.header_image;
           gameData.thumbnailImageURL = response.capsule_image;
@@ -66,7 +70,8 @@ export const addGame: Command = {
 
     await interaction.reply({
       embeds: [{
-        description: "Game successfully added!",
+        description: game.description ?? undefined,
+        footer: { text: "Game successfully added." },
         image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
         title: game.name,
         thumbnail: game.thumbnailImageURL ? { url: game.thumbnailImageURL } : undefined,
