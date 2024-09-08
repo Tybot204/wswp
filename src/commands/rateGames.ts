@@ -23,6 +23,8 @@ const gameEmbedBuilder = (game: Game): APIEmbed => {
 
 const builder = new SlashCommandBuilder().setName("rategames").setDescription("Rate all unrated games for your current user.");
 
+builder.addBooleanOption(option => option.setName("all").setDescription("Rate all games again and replace existing ratings."));
+
 export const rateGames: Command = {
   builder,
   execute: async (interaction) => {
@@ -34,7 +36,9 @@ export const rateGames: Command = {
 
     const user = await registerUser(interaction.user);
 
-    const games = await prisma.game.findMany({ where: { guildId, ratings: { none: { userId: user.id } } } });
+    const rateAll = interaction.options.getBoolean("all") ?? false;
+    const gameWhere = rateAll ? { guildId } : { guildId, ratings: { none: { userId: user.id } } };
+    const games = await prisma.game.findMany({ where: gameWhere });
 
     const buttonOne = new ButtonBuilder().setCustomId("1").setLabel("1").setStyle(ButtonStyle.Danger);
     const buttonTwo = new ButtonBuilder().setCustomId("2").setLabel("2").setStyle(ButtonStyle.Secondary);
@@ -59,7 +63,11 @@ export const rateGames: Command = {
       try {
         const ratingChoice = await reply.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 30000 });
 
-        await prisma.rating.create({ data: { gameId: game.id, score: parseInt(ratingChoice.customId), userId: user.id } });
+        await prisma.rating.upsert({
+          create: { gameId: game.id, score: parseInt(ratingChoice.customId), userId: user.id },
+          update: { score: parseInt(ratingChoice.customId) },
+          where: { gameId_userId: { gameId: game.id, userId: user.id } },
+        });
 
         game = games.shift();
         if (!game) {
