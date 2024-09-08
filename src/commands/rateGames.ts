@@ -26,8 +26,15 @@ const builder = new SlashCommandBuilder().setName("rategames").setDescription("R
 export const rateGames: Command = {
   builder,
   execute: async (interaction) => {
+    const guildId = interaction.guildId;
+    if (!guildId) {
+      await interaction.reply("This command can only be used in a server.");
+      return;
+    }
+
     const user = await registerUser(interaction.user);
-    const games = await prisma.game.findMany({ where: { ratings: { none: { userId: user.id } } } });
+
+    const games = await prisma.game.findMany({ where: { guildId, ratings: { none: { userId: user.id } } } });
 
     const buttonOne = new ButtonBuilder().setCustomId("1").setLabel("1").setStyle(ButtonStyle.Danger);
     const buttonTwo = new ButtonBuilder().setCustomId("2").setLabel("2").setStyle(ButtonStyle.Secondary);
