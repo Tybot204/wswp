@@ -10,9 +10,9 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   stylistic.configs.customize({
+    braceStyle: "1tbs",
     quotes: "double",
     semi: true,
-    braceStyle: "1tbs",
   }),
   { rules: { "sort-imports": ["error", { allowSeparatedGroups: true }] } },
 ];
