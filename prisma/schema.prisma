@@ -17,6 +17,7 @@ model Game {
   id String @id @default(uuid()) @db.Uuid
 
   isFree     Boolean @default(false) @map("is_free")
+  guildId    String  @map("guild_id")
   name       String
   numPlayers Int     @map("num_players")
   released   Boolean @default(true)

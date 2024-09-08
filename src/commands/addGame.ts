@@ -9,6 +9,7 @@ interface GameData {
   description?: string;
   isFree?: boolean;
   gameURL?: string;
+  guildId: string;
   name: string;
   numPlayers: number;
   bannerImageURL?: string;
@@ -51,9 +52,15 @@ export const addGame: Command = {
     // Ensure required options are provided. This should never happen.
     if (!name || !numPlayers) return;
 
+    const guildId = interaction.guildId;
+    if (!guildId) {
+      await interaction.reply("This command can only be used in a server.");
+      return;
+    }
+
     const user = await registerUser(interaction.user);
 
-    const gameData: GameData = { createdById: user.id, name, numPlayers };
+    const gameData: GameData = { createdById: user.id, guildId, name, numPlayers };
 
     const url = interaction.options.getString("url");
     if (url) {
