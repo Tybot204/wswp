@@ -73,6 +73,7 @@ export const whatShouldWePlay: Command = {
 
     await interaction.reply({
       embeds: [{
+        description: game.description ?? undefined,
         fields,
         image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
         footer: numExtraGames > 0 ? { text: footerText } : undefined,
