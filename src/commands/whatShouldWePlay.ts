@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { APIEmbedField, SlashCommandBuilder } from "discord.js";
 
 import { Command, prisma } from "..";
 
@@ -35,7 +35,7 @@ export const whatShouldWePlay: Command = {
       },
     });
 
-    if (totalRatings.length === 0) {
+    if (totalRatings[0]._avg.score === null) {
       await interaction.reply("No ratings found for the given number of players.");
       return;
     }
@@ -55,21 +55,28 @@ export const whatShouldWePlay: Command = {
       { where: { discordId: { in: discordMembers.map(member => member.user.id) } } },
     );
 
-    let embedDescription = `${totalRatings[0]._avg.score} -- Average\n\n`;
+    const fields: APIEmbedField[] = [];
+    if (game.gameURL) fields.push({ name: "URL:", value: game.gameURL });
+    fields.push({ inline: true, name: "Average Rating:", value: totalRatings[0]._avg.score?.toString() });
+    fields.push({ inline: true, name: "Number of Players:", value: game.numPlayers.toString() });
+
+    let ratingValues = "";
     discordMembers.forEach((member) => {
       const user = users.find(u => u.discordId === member.user.id);
-      let score;
-      if (user) {
-        score = userRatings.find(rating => rating.userId === user.id)?._sum.score;
-      }
-      embedDescription += `${score ?? "Not rated"} -- <@${member.user.id}>\n`;
+      const score = userRatings.find(rating => rating.userId === user?.id)?._sum.score;
+      ratingValues += `${score ?? "?"}: <@${member.user.id}>\n`;
     });
+    fields.push({ name: "Your Ratings:", value: ratingValues });
+
+    const numExtraGames = await prisma.game.count({ where: { numPlayers: { lt: matchedPlayers.length } } });
+    const footerText = numExtraGames == 1 ? "1 game that supports fewer players." : `${numExtraGames} games that support fewer players.`;
 
     await interaction.reply({
       embeds: [{
-        description: embedDescription,
+        fields,
         image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
-        title: `You should play ${game.name}!`,
+        footer: numExtraGames > 0 ? { text: footerText } : undefined,
+        title: game.name,
         thumbnail: game.thumbnailImageURL ? { url: game.thumbnailImageURL } : undefined,
         url: game.gameURL ?? undefined,
       }],
