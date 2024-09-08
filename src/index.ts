@@ -5,6 +5,7 @@ if (process.env.NODE_ENV === "development") {
 
 import { ChatInputCommandInteraction, Client, Events, GatewayIntentBits, REST, Routes, SlashCommandBuilder } from "discord.js";
 import { PrismaClient } from "@prisma/client";
+import SteamAPI from "steamapi";
 
 import { commandMap } from "./commands";
 
@@ -14,6 +15,8 @@ export interface Command {
 }
 
 export const prisma = new PrismaClient();
+
+export const steam = new SteamAPI(process.env.STEAM_API_KEY!);
 
 const client = new Client({ intents: GatewayIntentBits.Guilds });
 

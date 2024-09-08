@@ -68,7 +68,10 @@ export const whatShouldWePlay: Command = {
     await interaction.reply({
       embeds: [{
         description: embedDescription,
+        image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
         title: `You should play ${game.name}!`,
+        thumbnail: game.thumbnailImageURL ? { url: game.thumbnailImageURL } : undefined,
+        url: game.gameURL ?? undefined,
       }],
     });
   },
