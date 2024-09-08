@@ -19,9 +19,10 @@ import SteamAPI from "steamapi";
 import { commandMap } from "./commands";
 
 export interface Command {
-  autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
   builder: SlashCommandBuilder;
   execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
+
+  autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
 }
 
 export const prisma = new PrismaClient();

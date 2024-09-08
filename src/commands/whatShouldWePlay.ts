@@ -35,7 +35,7 @@ export const whatShouldWePlay: Command = {
       orderBy: { _avg: { score: "desc" } },
       take: 1,
       where: {
-        game: { numPlayers: { gte: matchedPlayers.length } },
+        game: { numPlayers: { gte: matchedPlayers.length }, released: true },
         user: { discordId: { in: discordMembers.map(member => member.user.id) } },
       },
     });
@@ -63,6 +63,7 @@ export const whatShouldWePlay: Command = {
     const fields: APIEmbedField[] = [];
     if (game.gameURL) fields.push({ name: "URL:", value: game.gameURL });
     fields.push({ inline: true, name: "Average Rating:", value: totalRatings[0]._avg.score?.toString() });
+    fields.push({ inline: true, name: "Is Free?", value: game.isFree ? "Yes" : "No" });
     fields.push({ inline: true, name: "Number of Players:", value: game.numPlayers.toString() });
 
     let ratingValues = "";

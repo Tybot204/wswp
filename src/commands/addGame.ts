@@ -6,13 +6,15 @@ import { registerUser } from "../util/registerUser";
 
 interface GameData {
   createdById: string;
-  description?: string;
-  isFree?: boolean;
-  gameURL?: string;
   guildId: string;
   name: string;
   numPlayers: number;
+
   bannerImageURL?: string;
+  description?: string;
+  isFree?: boolean;
+  gameURL?: string;
+  released?: boolean;
   thumbnailImageURL?: string;
 }
 
@@ -20,6 +22,7 @@ interface SteamGameDetails {
   capsule_image: string;
   is_free: boolean;
   header_image: string;
+  release_date: { coming_soon: boolean };
   short_description: string;
 }
 
@@ -73,6 +76,7 @@ export const addGame: Command = {
 
           gameData.description = response.short_description;
           gameData.isFree = response.is_free;
+          gameData.released = !response.release_date.coming_soon;
           gameData.bannerImageURL = response.header_image;
           gameData.thumbnailImageURL = response.capsule_image;
         } catch {
@@ -88,6 +92,11 @@ export const addGame: Command = {
     await interaction.reply({
       embeds: [{
         description: game.description ?? undefined,
+        fields: [
+          { inline: true, name: "Released", value: game.released ? "Yes" : "No" },
+          { inline: true, name: "Is Free?", value: game.isFree ? "Yes" : "No" },
+          { inline: true, name: "Number of Players", value: game.numPlayers.toString() },
+        ],
         footer: { text: "Game successfully added." },
         image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
         title: game.name,
