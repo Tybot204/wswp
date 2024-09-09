@@ -37,12 +37,12 @@ const builder = new SlashCommandBuilder()
   .setName("ratesinglegame")
   .setDescription("Rate a single game for your current user.");
 
-builder.addStringOption((option) =>
+builder.addStringOption(option =>
   option
     .setName("name")
     .setDescription("The name of the game to re-rate.")
     .setRequired(true)
-    .setAutocomplete(true)
+    .setAutocomplete(true),
 );
 
 export const rateSingleGame: Command = {
@@ -118,7 +118,7 @@ export const rateSingleGame: Command = {
     while (true) {
       try {
         const ratingChoice = await reply.awaitMessageComponent({
-          filter: (i) => i.user.id === interaction.user.id,
+          filter: i => i.user.id === interaction.user.id,
           time: 30000,
         });
 
@@ -160,7 +160,7 @@ export const rateSingleGame: Command = {
     });
 
     await interaction.respond(
-      games.map((game) => ({ name: game.name, value: game.id }))
+      games.map(game => ({ name: game.name, value: game.id })),
     );
   },
 };
