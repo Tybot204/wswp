@@ -59,15 +59,21 @@ export const rateSingleGame: Command = {
     const name = await interaction.options.getString("name");
     if (!name) return;
 
-    const game = await prisma.game.findUnique({
-      where: { id: name },
-      include: {
-        ratings: {
-          select: { score: true },
-          where: { user: { discordId: user.id } },
+    let game;
+    try {
+      const game = await prisma.game.findUnique({
+        where: { id: name },
+        include: {
+          ratings: {
+            select: { score: true },
+            where: { user: { discordId: user.id } },
+          },
         },
-      },
-    });
+      });
+    } catch {
+      await interaction.reply(`Could not find game "${id}". Try selecting from the autocomplete options.`);
+      return;
+    }
 
     if (game == null) {
       await interaction.reply("Game not found.");
