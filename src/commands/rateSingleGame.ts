@@ -57,10 +57,7 @@ export const rateSingleGame: Command = {
     const user = await registerUser(interaction.user);
 
     const name = await interaction.options.getString("name");
-    if (name == null) {
-      await interaction.reply("Game not found.");
-      return;
-    }
+    if (!name) return;
 
     const game = await prisma.game.findUnique({
       where: { id: name },
