@@ -1,14 +1,14 @@
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import type { Configuration } from "webpack";
 import nodeExternals from "webpack-node-externals";
 import { resolve } from "path";
-import webpack from "webpack";
 
-const config: webpack.Configuration = {
+const config: Configuration = {
   devtool: "source-map",
   entry: { bundle: "./src/index.ts" },
   externals: [nodeExternals()],
   mode:
-    (process.env.NODE_ENV as webpack.Configuration["mode"]) || "development",
+    (process.env.NODE_ENV as Configuration["mode"]) || "development",
   module: {
     rules: [
       {
@@ -26,7 +26,8 @@ const config: webpack.Configuration = {
   },
   plugins: [new CleanWebpackPlugin()],
   resolve: {
-    // NOTE: Order matters here. When duplicate filenames exist, the first matching extension imports.
+    // NOTE: Order matters here. When duplicate filenames exist,
+    //       the first matching extension imports.
     extensions: [".mjs", ".js", ".ts"],
   },
   target: "node",
