@@ -144,7 +144,7 @@ export const rateSingleGame: Command = {
         }
       } catch {
         await reply.edit({
-          content: "Rating timed out. Type `/ratesinglegames` again to resume.",
+          content: "Rating timed out. Type `/ratesinglegame` again to resume.",
           components: [],
           embeds: [],
         });
