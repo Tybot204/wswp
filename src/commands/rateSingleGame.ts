@@ -75,7 +75,7 @@ export const rateSingleGame: Command = {
       return;
     }
 
-    if (game == null) {
+    if (!game) {
       await interaction.reply("Game not found.");
       return;
     }
