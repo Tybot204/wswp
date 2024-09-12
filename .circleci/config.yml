@@ -60,12 +60,14 @@ workflows:
   build-lint:
     jobs:
       - install-dependencies:
+          name: Install Dependencies
           executor: node
           filters:
             tags:
               only: /.*/
 
-      - lint:
+      - build:
+          name: Build Project for Production
           executor: node
           requires:
             - install-dependencies
@@ -73,7 +75,8 @@ workflows:
             tags:
               only: /.*/
 
-      - build:
+      - lint:
+          name: Lint Project
           executor: node
           requires:
             - install-dependencies
