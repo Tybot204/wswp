@@ -66,13 +66,11 @@ workflows:
   build-lint:
     jobs:
       - install-dependencies:
-          name: Install Dependencies
           filters:
             tags:
               only: /.*/
 
       - build:
-          name: Build Project for Production
           requires:
             - install-dependencies
           filters:
@@ -80,7 +78,6 @@ workflows:
               only: /.*/
 
       - lint:
-          name: Lint Project
           requires:
             - install-dependencies
           filters:
