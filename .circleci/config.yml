@@ -7,68 +7,72 @@ executors:
 
 jobs:
   build:
-    - checkout
+    executor: node
+    steps:
+      - checkout
 
-    - attach_workspace:
-        at: .
+      - attach_workspace:
+          at: .
 
-    - run:
-        name: Build Project for Production
-        command: yarn build
-        environment:
-          NODE_ENV: production
+      - run:
+          name: Build Project for Production
+          command: yarn build
+          environment:
+            NODE_ENV: production
 
   install-dependencies:
-    - checkout
+    executor: node
+    steps:
+      - checkout
 
-    - restore_cache:
-        keys:
-          - v1-node-deps-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "prisma/schema.prisma" }}
-          - v1-node-deps-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
-          - v1-node-deps-{{ checksum "package.json" }}
-          - v1-node-deps
+      - restore_cache:
+          keys:
+            - v1-node-deps-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "prisma/schema.prisma" }}
+            - v1-node-deps-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+            - v1-node-deps-{{ checksum "package.json" }}
+            - v1-node-deps
 
-    - run:
-        name: Install Node Dependencies
-        command: yarn
+      - run:
+          name: Install Node Dependencies
+          command: yarn
 
-    - run:
-        name: Generate Prisma Types
-        command: yarn prisma generate
+      - run:
+          name: Generate Prisma Types
+          command: yarn prisma generate
 
-    - save_cache:
-        key: v1-node-deps-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "prisma/schema.prisma" }}
-        paths:
-          - node_modules
+      - save_cache:
+          key: v1-node-deps-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "prisma/schema.prisma" }}
+          paths:
+            - node_modules
 
-    - persist_to_workspace:
-        root: .
-        paths:
-          - node_modules
+      - persist_to_workspace:
+          root: .
+          paths:
+            - node_modules
 
   lint:
-    - checkout
+    executor: node
+    steps:
+      - checkout
 
-    - attach_workspace:
-        at: .
+      - attach_workspace:
+          at: .
 
-    - run:
-        name: Lint Project
-        command: yarn lint
+      - run:
+          name: Lint Project
+          command: yarn lint
 
 workflows:
   build-lint:
     jobs:
       - install-dependencies:
           name: Install Dependencies
-          executor: node
           filters:
             tags:
               only: /.*/
 
       - build:
           name: Build Project for Production
-          executor: node
           requires:
             - install-dependencies
           filters:
@@ -77,7 +81,6 @@ workflows:
 
       - lint:
           name: Lint Project
-          executor: node
           requires:
             - install-dependencies
           filters:
