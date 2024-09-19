@@ -1,5 +1,7 @@
 # What Should We Play?
 
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/Tybot204/wswp/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Tybot204/wswp/tree/main)
+
 A simple Discord bot to help you find what game to play with your friends. Allows rating of games and selects the best game based on the list of players present.
 
 ## Development Setup
