@@ -1,7 +1,6 @@
 version: 2.1
 
 orbs:
-  aws-cli: circleci/aws-cli@5.1.2
   aws-ecr: circleci/aws-ecr@9.3.7
 
 executors:
@@ -23,6 +22,11 @@ jobs:
           command: yarn build
           environment:
             NODE_ENV: production
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
 
   install-dependencies:
     executor: node
