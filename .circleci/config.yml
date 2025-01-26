@@ -94,7 +94,7 @@ workflows:
               only: /.*/
 
       - aws-ecr/build_and_push_image:
-          name: build-docker
+          name: build-docker-dev
           auth:
             - aws-cli/setup
           attach_workspace: true
@@ -105,5 +105,5 @@ workflows:
             - build
             - lint
           filters:
-            tags:
-              only: /.*/
+            branches:
+              only: main
