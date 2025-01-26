@@ -94,7 +94,7 @@ workflows:
             - aws-cli/setup
           attach_workspace: true
           repo: $CIRCLE_PROJECT_REPONAME
-          skip-when-tags-exist: true
+          skip_when_tags_exist: true
           tag: dev-${CIRCLE_SHA1:0:7}
           requires:
             - build
