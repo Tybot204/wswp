@@ -1,15 +1,18 @@
-import { SlashCommandBuilder } from "discord.js";
+import { InteractionContextType, SlashCommandBuilder } from "discord.js";
 
 import { Command, prisma } from "..";
 
-const builder = new SlashCommandBuilder().setName("listgames").setDescription("List all games added.");
+const builder = new SlashCommandBuilder()
+  .setName("listgames")
+  .setDescription("List all games added.")
+  .setContexts(InteractionContextType.Guild);
 
 export const listGames: Command = {
   builder,
   execute: async (interaction) => {
     const guildId = interaction.guildId;
     if (!guildId) {
-      await interaction.reply("This command can only be used in a server.");
+      await interaction.reply({ content: "This command can only be used in a server.", ephemeral: true });
       return;
     }
 

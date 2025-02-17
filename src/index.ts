@@ -29,7 +29,7 @@ export const prisma = new PrismaClient();
 
 export const steam = new SteamAPI(process.env.STEAM_API_KEY!);
 
-const client = new Client({ intents: GatewayIntentBits.Guilds });
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.once(Events.ClientReady, (readyClient) => {
   console.log(`Logged in as ${readyClient.user?.tag}`);

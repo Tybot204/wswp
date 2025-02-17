@@ -1,4 +1,4 @@
-import { APIEmbed, ButtonBuilder, ButtonStyle, ComponentType, SlashCommandBuilder } from "discord.js";
+import { APIEmbed, ButtonBuilder, ButtonStyle, ComponentType, InteractionContextType, SlashCommandBuilder } from "discord.js";
 
 import { Game } from "@prisma/client";
 
@@ -21,7 +21,10 @@ const gameEmbedBuilder = (game: Game): APIEmbed => {
   };
 };
 
-const builder = new SlashCommandBuilder().setName("rategames").setDescription("Rate all unrated games for your current user.");
+const builder = new SlashCommandBuilder()
+  .setName("rategames")
+  .setDescription("Rate all unrated games for your current user.")
+  .setContexts(InteractionContextType.Guild);
 
 builder.addBooleanOption(option => option.setName("all").setDescription("Rate all games again and replace existing ratings."));
 
@@ -30,7 +33,7 @@ export const rateGames: Command = {
   execute: async (interaction) => {
     const guildId = interaction.guildId;
     if (!guildId) {
-      await interaction.reply("This command can only be used in a server.");
+      await interaction.reply({ content: "This command can only be used in a server.", ephemeral: true });
       return;
     }
 
@@ -49,7 +52,7 @@ export const rateGames: Command = {
     let game = games.shift();
 
     if (!game) {
-      await interaction.reply("No new games to rate.");
+      await interaction.reply({ content: "No new games to rate.", ephemeral: true });
       return;
     }
 

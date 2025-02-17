@@ -1,4 +1,4 @@
-import { APIEmbed, ButtonBuilder, ButtonStyle, ComponentType, SlashCommandBuilder } from "discord.js";
+import { APIEmbed, ButtonBuilder, ButtonStyle, ComponentType, InteractionContextType, SlashCommandBuilder } from "discord.js";
 
 import { Game } from "@prisma/client";
 
@@ -21,7 +21,8 @@ const gameEmbedBuilder = (game: Game): APIEmbed => {
 
 const builder = new SlashCommandBuilder()
   .setName("removegame")
-  .setDescription("Remove a game and all associated ratings.");
+  .setDescription("Remove a game and all associated ratings.")
+  .setContexts(InteractionContextType.Guild);
 
 builder.addStringOption(option =>
   option.setName("game")
@@ -35,7 +36,7 @@ export const removeGame: Command = {
   execute: async (interaction) => {
     const guildId = interaction.guildId;
     if (!guildId) {
-      await interaction.reply("This command can only be used in a server.");
+      await interaction.reply({ content: "This command can only be used in a server.", ephemeral: true });
       return;
     }
 
@@ -54,7 +55,7 @@ export const removeGame: Command = {
       game = games.shift();
 
       if (!game) {
-        await interaction.reply(`Could not find game "${gameNameOrID}". Try selecting from the autocomplete options.`);
+        await interaction.reply({ content: `Could not find game "${gameNameOrID}". Try selecting from the autocomplete options.`, ephemeral: true });
         return;
       }
 
