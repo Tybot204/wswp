@@ -72,7 +72,7 @@ export const addGame: Command = {
     if (url) {
       gameData.gameURL = url;
 
-      const steamGameId = url.match(/(?:https?:\/\/store\.steampowered\.com\/app\/)(\d+)/)?.[1];
+      const steamGameId = parseInt(url.match(/(?:https?:\/\/store\.steampowered\.com\/app\/)(\d+)/)?.[1] || "");
       if (steamGameId) {
         try {
           const response = await steam.getGameDetails(steamGameId) as unknown as SteamGameDetails;

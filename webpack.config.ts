@@ -1,4 +1,3 @@
-import { CleanWebpackPlugin } from "clean-webpack-plugin";
 import type { Configuration } from "webpack";
 import nodeExternals from "webpack-node-externals";
 import { resolve } from "path";
@@ -20,11 +19,11 @@ const config: Configuration = {
   },
   optimization: { minimize: false },
   output: {
+    clean: true,
     filename: "[name].js",
     libraryTarget: "umd",
     path: resolve(__dirname, "build"),
   },
-  plugins: [new CleanWebpackPlugin()],
   resolve: {
     // NOTE: Order matters here. When duplicate filenames exist,
     //       the first matching extension imports.
