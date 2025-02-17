@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { InteractionContextType, SlashCommandBuilder } from "discord.js";
 
 import { Command, prisma, steam } from "..";
 
@@ -26,7 +26,10 @@ interface SteamGameDetails {
   short_description: string;
 }
 
-const builder = new SlashCommandBuilder().setName("addgame").setDescription("Add a game to the database.");
+const builder = new SlashCommandBuilder()
+  .setName("addgame")
+  .setDescription("Add a game to the database.")
+  .setContexts(InteractionContextType.Guild);
 
 builder.addStringOption(option =>
   option.setName("name")
@@ -57,7 +60,7 @@ export const addGame: Command = {
 
     const guildId = interaction.guildId;
     if (!guildId) {
-      await interaction.reply("This command can only be used in a server.");
+      await interaction.reply({ content: "This command can only be used in a server.", ephemeral: true });
       return;
     }
 

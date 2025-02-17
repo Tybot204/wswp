@@ -1,8 +1,11 @@
-import { APIEmbedField, SlashCommandBuilder } from "discord.js";
+import { APIEmbedField, InteractionContextType, SlashCommandBuilder } from "discord.js";
 
 import { Command, prisma } from "..";
 
-const builder = new SlashCommandBuilder().setName("whatshouldweplay").setDescription("Give me a game to play with the given people.");
+const builder = new SlashCommandBuilder()
+  .setName("whatshouldweplay")
+  .setDescription("Give me a game to play with the given people.")
+  .setContexts(InteractionContextType.Guild);
 
 builder.addStringOption(option =>
   option.setName("players")
@@ -23,7 +26,7 @@ export const whatShouldWePlay: Command = {
 
     const guild = interaction.guild;
     if (!guild) {
-      await interaction.reply("This command can only be used in a server.");
+      await interaction.reply({ content: "This command can only be used in a server.", ephemeral: true });
       return;
     }
 
@@ -41,13 +44,13 @@ export const whatShouldWePlay: Command = {
     });
 
     if (totalRatings[0]._avg.score === null) {
-      await interaction.reply("No ratings found for the given number of players.");
+      await interaction.reply({ content: "No ratings found for the given number of players.", ephemeral: true });
       return;
     }
 
     const game = await prisma.game.findUnique({ where: { id: totalRatings[0].gameId } });
     if (!game) {
-      await interaction.reply("Game not found. This is a bug if you are reading this.");
+      await interaction.reply({ content: "Something went wrong... Please try again.", ephemeral: true });
       return;
     }
 

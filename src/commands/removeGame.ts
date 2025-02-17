@@ -1,10 +1,11 @@
-import { SlashCommandBuilder } from "discord.js";
+import { InteractionContextType, SlashCommandBuilder } from "discord.js";
 
 import { Command, prisma } from "..";
 
 const builder = new SlashCommandBuilder()
   .setName("removegame")
-  .setDescription("Remove a game and all associated ratings.");
+  .setDescription("Remove a game and all associated ratings.")
+  .setContexts(InteractionContextType.Guild);
 
 builder.addStringOption(option =>
   option.setName("game")
@@ -18,7 +19,7 @@ export const removeGame: Command = {
   execute: async (interaction) => {
     const guildId = interaction.guildId;
     if (!guildId) {
-      await interaction.reply("This command can only be used in a server.");
+      await interaction.reply({ content: "This command can only be used in a server.", ephemeral: true });
       return;
     }
 
@@ -31,7 +32,7 @@ export const removeGame: Command = {
     try {
       game = await prisma.game.delete({ where: { id } });
     } catch {
-      await interaction.reply(`Could not find game "${id}". Try selecting from the autocomplete options.`);
+      await interaction.reply({ content: `Could not find game "${id}". Try selecting from the autocomplete options.`, ephemeral: true });
       return;
     }
 
