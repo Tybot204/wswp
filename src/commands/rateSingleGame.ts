@@ -3,6 +3,7 @@ import {
   ButtonBuilder,
   ButtonStyle,
   ComponentType,
+  InteractionContextType,
   SlashCommandBuilder,
 } from "discord.js";
 
@@ -35,7 +36,8 @@ const gameEmbedBuilder = (game: Game): APIEmbed => {
 
 const builder = new SlashCommandBuilder()
   .setName("ratesinglegame")
-  .setDescription("Rate a single game for your current user.");
+  .setDescription("Rate a single game for your current user.")
+  .setContexts(InteractionContextType.Guild);
 
 builder.addStringOption(option =>
   option
@@ -50,7 +52,7 @@ export const rateSingleGame: Command = {
   execute: async (interaction) => {
     const guildId = interaction.guildId;
     if (!guildId) {
-      await interaction.reply("This command can only be used in a server.");
+      await interaction.reply({ content: "This command can only be used in a server.", ephemeral: true });
       return;
     }
 
@@ -71,12 +73,12 @@ export const rateSingleGame: Command = {
         },
       });
     } catch {
-      await interaction.reply(`Could not find game "${name}". Try selecting from the autocomplete options.`);
+      await interaction.reply({ content: `Could not find game "${name}". Try selecting from the autocomplete options.`, ephemeral: true });
       return;
     }
 
     if (!game) {
-      await interaction.reply("Game not found.");
+      await interaction.reply({ content: "Game not found.", ephemeral: true });
       return;
     }
 
