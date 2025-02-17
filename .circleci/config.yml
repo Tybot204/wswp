@@ -1,9 +1,5 @@
 version: 2.1
 
-orbs:
-  aws-cli: circleci/aws-cli@5.1.2
-  aws-ecr: circleci/aws-ecr@9.3.7
-
 executors:
   node:
     docker:
@@ -92,18 +88,3 @@ workflows:
           filters:
             tags:
               only: /.*/
-
-      - aws-ecr/build_and_push_image:
-          name: build-docker-dev
-          auth:
-            - aws-cli/setup
-          attach_workspace: true
-          repo: $CIRCLE_PROJECT_REPONAME
-          skip_when_tags_exist: true
-          tag: dev-${CIRCLE_SHA1:0:7}
-          requires:
-            - build
-            - lint
-          filters:
-            branches:
-              only: main
