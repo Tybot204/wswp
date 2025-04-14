@@ -53,6 +53,10 @@ jobs:
           command: yarn prisma generate
 
       - run:
+          name: Run Prisma Migrations
+          command: yarn prisma migrate deploy
+
+      - run:
           name: Generate Prisma SQL Types
           command: yarn prisma generate --sql
 
