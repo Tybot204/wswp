@@ -8,7 +8,7 @@ const gameEmbedBuilder = (game: Game): APIEmbed => {
   return {
     description: game.description ?? undefined,
     fields: [
-      { inline: true, name: "Number of players", value: game.numPlayers.toString() },
+      { inline: true, name: "Players", value: `${game.minPlayers} - ${game.maxPlayers}` },
       { inline: true, name: "Is free?", value: game.isFree ? "Yes" : "No" },
     ],
     footer: { text: "Remove this game?" },
@@ -90,7 +90,7 @@ export const removeGame: Command = {
             let content = "Finished reviewing all games for removal!";
             if (removedGames.length > 0) {
               content += "\n\nRemoved games:";
-              removedGames.forEach(g => content += `\n${g.name} - ${g.numPlayers} Players`);
+              removedGames.forEach(g => content += `\n${g.name} - (Players: ${g.minPlayers} - ${g.maxPlayers})`);
             }
 
             await removeChoice.update({ content, components: [], embeds: [] });
@@ -114,6 +114,6 @@ export const removeGame: Command = {
       where: { guildId, name: { contains: focusedValue, mode: "insensitive" } },
     });
 
-    await interaction.respond(games.map(game => ({ name: `${game.name} - ${game.numPlayers} Players`, value: game.id })));
+    await interaction.respond(games.map(game => ({ name: `${game.name} - ${game.maxPlayers} Players`, value: game.id })));
   },
 };

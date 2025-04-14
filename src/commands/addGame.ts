@@ -8,7 +8,8 @@ interface GameData {
   createdById: string;
   guildId: string;
   name: string;
-  numPlayers: number;
+  minPlayers: number;
+  maxPlayers: number;
 
   bannerImageURL?: string;
   description?: string;
@@ -38,10 +39,16 @@ builder.addStringOption(option =>
 );
 
 builder.addIntegerOption(option =>
-  option.setName("numplayers")
-    .setDescription("The number of players the game supports.")
+  option.setName("maxplayers")
+    .setDescription("The maximum number of players the game supports.")
     .setRequired(true)
-    .setMinValue(2),
+    .setMinValue(1),
+);
+
+builder.addIntegerOption(option =>
+  option.setName("minplayers")
+    .setDescription("The minimum number of players the game supports.")
+    .setMinValue(1),
 );
 
 builder.addStringOption(option =>
@@ -53,10 +60,10 @@ export const addGame: Command = {
   builder,
   execute: async (interaction) => {
     const name = interaction.options.getString("name");
-    const numPlayers = interaction.options.getInteger("numplayers");
+    const maxPlayers = interaction.options.getInteger("maxplayers");
 
     // Ensure required options are provided. This should never happen.
-    if (!name || !numPlayers) return;
+    if (!name || !maxPlayers) return;
 
     const guildId = interaction.guildId;
     if (!guildId) {
@@ -66,7 +73,12 @@ export const addGame: Command = {
 
     const user = await registerUser(interaction.user);
 
-    const gameData: GameData = { createdById: user.id, guildId, name, numPlayers };
+    const gameData: GameData = {
+      createdById: user.id,
+      guildId, name,
+      maxPlayers,
+      minPlayers: interaction.options.getInteger("minplayers") ?? 1,
+    };
 
     const url = interaction.options.getString("url");
     if (url) {
@@ -98,7 +110,7 @@ export const addGame: Command = {
         fields: [
           { inline: true, name: "Released", value: game.released ? "Yes" : "No" },
           { inline: true, name: "Is Free?", value: game.isFree ? "Yes" : "No" },
-          { inline: true, name: "Number of Players", value: game.numPlayers.toString() },
+          { inline: true, name: "Players", value: `${game.minPlayers} - ${game.maxPlayers}` },
         ],
         footer: { text: "Game successfully added." },
         image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,

@@ -38,7 +38,7 @@ export const whatShouldWePlay: Command = {
       orderBy: { _avg: { score: "desc" } },
       take: 1,
       where: {
-        game: { numPlayers: { gte: matchedPlayers.length }, released: true },
+        game: { maxPlayers: { gte: matchedPlayers.length }, minPlayers: { lte: matchedPlayers.length }, released: true },
         user: { discordId: { in: discordMembers.map(member => member.user.id) } },
       },
     });
@@ -65,9 +65,9 @@ export const whatShouldWePlay: Command = {
 
     const fields: APIEmbedField[] = [];
     if (game.gameURL) fields.push({ name: "URL:", value: game.gameURL });
-    fields.push({ inline: true, name: "Average Rating:", value: totalRatings[0]._avg.score?.toString() });
+    fields.push({ inline: true, name: "Rating (Average)", value: totalRatings[0]._avg.score?.toString() });
     fields.push({ inline: true, name: "Is Free?", value: game.isFree ? "Yes" : "No" });
-    fields.push({ inline: true, name: "Number of Players:", value: game.numPlayers.toString() });
+    fields.push({ inline: true, name: "Players", value: `${game.minPlayers} - ${game.maxPlayers}` });
 
     let ratingValues = "";
     discordMembers.forEach((member) => {
@@ -77,15 +77,23 @@ export const whatShouldWePlay: Command = {
     });
     fields.push({ name: "Your Ratings:", value: ratingValues });
 
-    const numExtraGames = await prisma.game.count({ where: { numPlayers: { lt: matchedPlayers.length } } });
-    const footerText = numExtraGames == 1 ? "1 game that supports fewer players." : `${numExtraGames} games that support fewer players.`;
+    const numSmallerGames = await prisma.game.count({ where: { maxPlayers: { lt: matchedPlayers.length } } });
+    const numLargerGames = await prisma.game.count({ where: { minPlayers: { gt: matchedPlayers.length } } });
+    let footerText: string | undefined = undefined;
+    if (numSmallerGames > 0) {
+      footerText = `There are ${numSmallerGames} game${numSmallerGames === 1 ? "" : "s"} that support fewer players.`;
+    }
+    if (numLargerGames > 0) {
+      if (numSmallerGames > 0) footerText += "\n";
+      footerText = `There are ${numLargerGames} game${numLargerGames === 1 ? "" : "s"} that support more players.`;
+    }
 
     await interaction.reply({
       embeds: [{
         description: game.description ?? undefined,
         fields,
         image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
-        footer: numExtraGames > 0 ? { text: footerText } : undefined,
+        footer: footerText ? { text: footerText } : undefined,
         title: game.name,
         thumbnail: game.thumbnailImageURL ? { url: game.thumbnailImageURL } : undefined,
         url: game.gameURL ?? undefined,

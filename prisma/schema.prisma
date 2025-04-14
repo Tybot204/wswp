@@ -20,7 +20,8 @@ model Game {
   isFree     Boolean @default(false) @map("is_free")
   guildId    String  @map("guild_id")
   name       String
-  numPlayers Int     @map("num_players")
+  maxPlayers Int     @map("max_players")
+  minPlayers Int     @default(1) @map("min_players")
   released   Boolean @default(true)
 
   bannerImageURL    String? @map("banner_image_url")
