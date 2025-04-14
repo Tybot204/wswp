@@ -3,6 +3,7 @@ import { APIEmbed, ButtonBuilder, ButtonStyle, ComponentType, InteractionContext
 import { Game } from "@prisma/client";
 
 import { Command, prisma } from "..";
+import { gameAutocomplete } from "../util/gameAutocomplete";
 
 const gameEmbedBuilder = (game: Game): APIEmbed => {
   return {
@@ -105,15 +106,6 @@ export const removeGame: Command = {
       }
     }
   },
-  autocomplete: async (interaction) => {
-    const guildId = interaction.guildId;
-    if (!guildId) return;
 
-    const focusedValue = interaction.options.getFocused();
-    const games = await prisma.game.findMany({
-      where: { guildId, name: { contains: focusedValue, mode: "insensitive" } },
-    });
-
-    await interaction.respond(games.map(game => ({ name: `${game.name} - ${game.numPlayers} Players`, value: game.id })));
-  },
+  autocomplete: gameAutocomplete,
 };
