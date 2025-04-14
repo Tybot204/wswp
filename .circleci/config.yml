@@ -45,6 +45,10 @@ jobs:
           name: Generate Prisma Types
           command: yarn prisma generate
 
+      - run:
+          name: Generate Prisma SQL Types
+          command: yarn prisma generate --sql
+
       - save_cache:
           key: v1-node-deps-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "prisma/schema.prisma" }}
           paths:
