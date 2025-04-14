@@ -372,11 +372,6 @@
   dependencies:
     undici-types "~6.20.0"
 
-"@types/steamapi@^2.2.5":
-  version "2.2.5"
-  resolved "https://registry.yarnpkg.com/@types/steamapi/-/steamapi-2.2.5.tgz#c170dc905a7c44662889bc387f8e99d3d1947bfa"
-  integrity sha512-cpxm1Fn9B8ZcjNQ79ebC3/20DxaUq8zNF520rctPtX71/PxHT49oLlk2coPsg132zGsTihcOU0umP8qrUrccmA==
-
 "@types/webpack-node-externals@^3.0.4":
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/@types/webpack-node-externals/-/webpack-node-externals-3.0.4.tgz#00581677aedea57cbe180afc2987b12fa95cf351"
@@ -1754,7 +1749,7 @@ source-map@^0.7.4:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.7.4.tgz#a9bbe705c9d8846f4e08ff6765acf0f1b0898656"
   integrity sha512-l3BikUxvPOcn5E74dZiq5BGsTb5yEwhaTSzccU6t4sDOH8NWJCstKO5QT2CvtFoK6F0saL7p9xHAqHOlCPJygA==
 
-steamapi@^3.0.12:
+steamapi@3.0.12:
   version "3.0.12"
   resolved "https://registry.yarnpkg.com/steamapi/-/steamapi-3.0.12.tgz#65c43a46c997258484e6006f797d768fca4dbf77"
   integrity sha512-bGH3OPANcFlFN4DS5hXY4xEufh11peejcoHQ8fIu4Mm2o7LtpBwVqRKozfwDalQ45k8Xd8QKutSpoGrzGA5SAQ==
