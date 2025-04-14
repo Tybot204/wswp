@@ -4,6 +4,13 @@ executors:
   node:
     docker:
       - image: cimg/node:22.14
+  
+  node-postgres:
+    docker:
+      - image: cimg/node:22.14
+      - image: cimg/postgres:16.8
+        environment:
+          POSTGRES_DB: wswp
 
 jobs:
   build:
@@ -26,7 +33,7 @@ jobs:
             - build
 
   install-dependencies:
-    executor: node
+    executor: node-postgres
     steps:
       - checkout
 
@@ -44,6 +51,14 @@ jobs:
       - run:
           name: Generate Prisma Types
           command: yarn prisma generate
+
+      - run:
+          name: Run Prisma Migrations
+          command: yarn prisma migrate deploy
+
+      - run:
+          name: Generate Prisma SQL Types
+          command: yarn prisma generate --sql
 
       - save_cache:
           key: v1-node-deps-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "prisma/schema.prisma" }}
