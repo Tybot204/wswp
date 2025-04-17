@@ -12,6 +12,7 @@ import { Game } from "@prisma/client";
 
 import { Command, prisma } from "..";
 
+import { gameAutocomplete } from "../util/gameAutocomplete";
 import { registerUser } from "../util/registerUser";
 
 const gameEmbedBuilder = (game: Game): APIEmbed => {
@@ -153,17 +154,5 @@ export const rateSingleGame: Command = {
     }
   },
 
-  autocomplete: async (interaction) => {
-    const guildId = interaction.guildId;
-    if (!guildId) return;
-
-    const focusedValue = interaction.options.getFocused();
-    const games = await prisma.game.findMany({
-      where: { guildId, name: { contains: focusedValue, mode: "insensitive" } },
-    });
-
-    await interaction.respond(
-      games.map(game => ({ name: game.name, value: game.id })),
-    );
-  },
+  autocomplete: gameAutocomplete,
 };
