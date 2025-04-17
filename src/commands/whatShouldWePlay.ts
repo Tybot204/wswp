@@ -1,4 +1,4 @@
-import { APIEmbedField, InteractionContextType, SlashCommandBuilder } from "discord.js";
+import { APIEmbedField, InteractionContextType, MessageFlags, SlashCommandBuilder } from "discord.js";
 
 import { Command, prisma } from "..";
 
@@ -26,7 +26,7 @@ export const whatShouldWePlay: Command = {
 
     const guild = interaction.guild;
     if (!guild) {
-      await interaction.reply({ content: "This command can only be used in a server.", ephemeral: true });
+      await interaction.reply({ content: "This command can only be used in a server.", flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -44,13 +44,13 @@ export const whatShouldWePlay: Command = {
     });
 
     if (totalRatings[0]._avg.score === null) {
-      await interaction.reply({ content: "No ratings found for the given number of players.", ephemeral: true });
+      await interaction.reply({ content: "No ratings found for the given number of players.", flags: MessageFlags.Ephemeral });
       return;
     }
 
     const game = await prisma.game.findUnique({ where: { id: totalRatings[0].gameId } });
     if (!game) {
-      await interaction.reply({ content: "Something went wrong... Please try again.", ephemeral: true });
+      await interaction.reply({ content: "Something went wrong... Please try again.", flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -66,7 +66,7 @@ export const whatShouldWePlay: Command = {
     const fields: APIEmbedField[] = [];
     if (game.gameURL) fields.push({ name: "URL:", value: game.gameURL });
     fields.push({ inline: true, name: "Average Rating:", value: totalRatings[0]._avg.score?.toString() });
-    fields.push({ inline: true, name: "Is Free?", value: game.isFree ? "Yes" : "No" });
+    fields.push({ inline: true, name: "Free?", value: game.free ? "Yes" : "No" });
     fields.push({ inline: true, name: "Number of Players:", value: game.numPlayers.toString() });
 
     let ratingValues = "";

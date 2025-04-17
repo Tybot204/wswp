@@ -4,6 +4,7 @@ import {
   ButtonStyle,
   ComponentType,
   InteractionContextType,
+  MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
 
@@ -23,7 +24,7 @@ const gameEmbedBuilder = (game: Game): APIEmbed => {
         name: "Number of players",
         value: game.numPlayers.toString(),
       },
-      { inline: true, name: "Is free?", value: game.isFree ? "Yes" : "No" },
+      { inline: true, name: "Free?", value: game.free ? "Yes" : "No" },
     ],
     footer: { text: "Rate the game from 1 to 5." },
     image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
@@ -53,7 +54,7 @@ export const rateSingleGame: Command = {
   execute: async (interaction) => {
     const guildId = interaction.guildId;
     if (!guildId) {
-      await interaction.reply({ content: "This command can only be used in a server.", ephemeral: true });
+      await interaction.reply({ content: "This command can only be used in a server.", flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -74,12 +75,12 @@ export const rateSingleGame: Command = {
         },
       });
     } catch {
-      await interaction.reply({ content: `Could not find game "${name}". Try selecting from the autocomplete options.`, ephemeral: true });
+      await interaction.reply({ content: `Could not find game "${name}". Try selecting from the autocomplete options.`, flags: MessageFlags.Ephemeral });
       return;
     }
 
     if (!game) {
-      await interaction.reply({ content: "Game not found.", ephemeral: true });
+      await interaction.reply({ content: "Game not found.", flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -118,7 +119,7 @@ export const rateSingleGame: Command = {
         },
       ],
       embeds: [gameEmbedBuilder(game)],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     try {

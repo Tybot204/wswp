@@ -41,7 +41,7 @@ export const listGames: Command = {
     const guildId = interaction.guildId;
     const guild = interaction.guild;
     if (!guildId || !guild) {
-      await interaction.reply({ content: "This command can only be used in a server.", ephemeral: true });
+      await interaction.reply({ content: "This command can only be used in a server.", flags: MessageFlags.Ephemeral });
       return;
     };
 
@@ -60,7 +60,7 @@ export const listGames: Command = {
     }
 
     if (games.length === 0) {
-      await interaction.reply({ content: "No games found. Type `/addgame` to add one!", ephemeral: true });
+      await interaction.reply({ content: "No games found. Type `/addgame` to add one!", flags: MessageFlags.Ephemeral });
       return;
     };
 

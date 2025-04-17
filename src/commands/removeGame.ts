@@ -1,4 +1,4 @@
-import { APIEmbed, ButtonBuilder, ButtonStyle, ComponentType, InteractionContextType, SlashCommandBuilder } from "discord.js";
+import { APIEmbed, ButtonBuilder, ButtonStyle, ComponentType, InteractionContextType, MessageFlags, SlashCommandBuilder } from "discord.js";
 
 import { Game } from "@prisma/client";
 
@@ -10,7 +10,7 @@ const gameEmbedBuilder = (game: Game): APIEmbed => {
     description: game.description ?? undefined,
     fields: [
       { inline: true, name: "Number of players", value: game.numPlayers.toString() },
-      { inline: true, name: "Is free?", value: game.isFree ? "Yes" : "No" },
+      { inline: true, name: "Free?", value: game.free ? "Yes" : "No" },
     ],
     footer: { text: "Remove this game?" },
     image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
@@ -37,7 +37,7 @@ export const removeGame: Command = {
   execute: async (interaction) => {
     const guildId = interaction.guildId;
     if (!guildId) {
-      await interaction.reply({ content: "This command can only be used in a server.", ephemeral: true });
+      await interaction.reply({ content: "This command can only be used in a server.", flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -56,7 +56,7 @@ export const removeGame: Command = {
       game = games.shift();
 
       if (!game) {
-        await interaction.reply({ content: `Could not find game "${gameNameOrID}". Try selecting from the autocomplete options.`, ephemeral: true });
+        await interaction.reply({ content: `Could not find game "${gameNameOrID}". Try selecting from the autocomplete options.`, flags: MessageFlags.Ephemeral });
         return;
       }
 
@@ -73,7 +73,7 @@ export const removeGame: Command = {
         components: [{ components: [buttonNo, buttonYes], type: ComponentType.ActionRow }],
         content: "Multiple games by that name found. Remove this game?",
         embeds: [gameEmbedBuilder(game)],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
 
       const removedGames: Game[] = [];
