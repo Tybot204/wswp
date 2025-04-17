@@ -17,7 +17,7 @@ datasource db {
 model Game {
   id String @id @default(uuid()) @db.Uuid
 
-  isFree     Boolean @default(false) @map("is_free")
+  free       Boolean @default(false)
   guildId    String  @map("guild_id")
   name       String
   maxPlayers Int     @map("max_players")

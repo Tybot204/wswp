@@ -1,4 +1,4 @@
-import { APIEmbed, ButtonBuilder, ButtonStyle, ComponentType, InteractionContextType, SlashCommandBuilder } from "discord.js";
+import { APIEmbed, ButtonBuilder, ButtonStyle, ComponentType, InteractionContextType, MessageFlags, SlashCommandBuilder } from "discord.js";
 
 import { Game } from "@prisma/client";
 
@@ -11,7 +11,7 @@ const gameEmbedBuilder = (game: Game): APIEmbed => {
     description: game.description ?? undefined,
     fields: [
       { inline: true, name: "Players", value: `${game.minPlayers} - ${game.maxPlayers}` },
-      { inline: true, name: "Is free?", value: game.isFree ? "Yes" : "No" },
+      { inline: true, name: "Free?", value: game.free ? "Yes" : "No" },
     ],
     footer: { text: "Rate the game from 1 to 5." },
     image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
@@ -33,7 +33,7 @@ export const rateGames: Command = {
   execute: async (interaction) => {
     const guildId = interaction.guildId;
     if (!guildId) {
-      await interaction.reply({ content: "This command can only be used in a server.", ephemeral: true });
+      await interaction.reply({ content: "This command can only be used in a server.", flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -52,14 +52,14 @@ export const rateGames: Command = {
     let game = games.shift();
 
     if (!game) {
-      await interaction.reply({ content: "No new games to rate.", ephemeral: true });
+      await interaction.reply({ content: "No new games to rate.", flags: MessageFlags.Ephemeral });
       return;
     }
 
     const reply = await interaction.reply({
       components: [{ components: [buttonOne, buttonTwo, buttonThree, buttonFour, buttonFive], type: ComponentType.ActionRow }],
       embeds: [gameEmbedBuilder(game)],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     while (true) {

@@ -1,23 +1,10 @@
-import { InteractionContextType, SlashCommandBuilder } from "discord.js";
+import { InteractionContextType, MessageFlags, SlashCommandBuilder } from "discord.js";
+
+import { Prisma } from "@prisma/client";
 
 import { Command, prisma, steam } from "..";
 
 import { registerUser } from "../util/registerUser";
-
-interface GameData {
-  createdById: string;
-  guildId: string;
-  name: string;
-  minPlayers: number;
-  maxPlayers: number;
-
-  bannerImageURL?: string;
-  description?: string;
-  isFree?: boolean;
-  gameURL?: string;
-  released?: boolean;
-  thumbnailImageURL?: string;
-}
 
 interface SteamGameDetails {
   capsule_image: string;
@@ -56,6 +43,16 @@ builder.addStringOption(option =>
     .setDescription("A URL to the game. Steam store pages will pull information about the game."),
 );
 
+builder.addBooleanOption(option =>
+  option.setName("released")
+    .setDescription("Whether the game has been released. (Overrides Steam URL integration)"),
+);
+
+builder.addBooleanOption(option =>
+  option.setName("free")
+    .setDescription("Whether the game is free to play. (Overrides Steam URL integration)"),
+);
+
 export const addGame: Command = {
   builder,
   execute: async (interaction) => {
@@ -67,17 +64,18 @@ export const addGame: Command = {
 
     const guildId = interaction.guildId;
     if (!guildId) {
-      await interaction.reply({ content: "This command can only be used in a server.", ephemeral: true });
+      await interaction.reply({ content: "This command can only be used in a server.", flags: MessageFlags.Ephemeral });
       return;
     }
 
     const user = await registerUser(interaction.user);
 
-    const gameData: GameData = {
-      createdById: user.id,
-      guildId, name,
+    const gameData: Prisma.GameCreateInput = {
+      createdBy: { connect: { id: user.id } },
+      guildId,
       maxPlayers,
       minPlayers: interaction.options.getInteger("minplayers") ?? 1,
+      name,
     };
 
     const url = interaction.options.getString("url");
@@ -90,7 +88,7 @@ export const addGame: Command = {
           const response = await steam.getGameDetails(steamGameId) as unknown as SteamGameDetails;
 
           gameData.description = response.short_description;
-          gameData.isFree = response.is_free;
+          gameData.free = response.is_free;
           gameData.released = !response.release_date.coming_soon;
           gameData.bannerImageURL = response.header_image;
           gameData.thumbnailImageURL = response.capsule_image;
@@ -102,6 +100,13 @@ export const addGame: Command = {
       }
     }
 
+    // Override Steam integration data if user provided released or free
+    const released = interaction.options.getBoolean("released");
+    if (released !== null) gameData.released = released;
+
+    const free = interaction.options.getBoolean("free");
+    if (free !== null) gameData.free = free;
+
     const game = await prisma.game.create({ data: gameData });
 
     await interaction.reply({
@@ -109,7 +114,7 @@ export const addGame: Command = {
         description: game.description ?? undefined,
         fields: [
           { inline: true, name: "Released", value: game.released ? "Yes" : "No" },
-          { inline: true, name: "Is Free?", value: game.isFree ? "Yes" : "No" },
+          { inline: true, name: "Free?", value: game.free ? "Yes" : "No" },
           { inline: true, name: "Players", value: `${game.minPlayers} - ${game.maxPlayers}` },
         ],
         footer: { text: "Game successfully added." },

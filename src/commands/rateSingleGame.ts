@@ -4,6 +4,7 @@ import {
   ButtonStyle,
   ComponentType,
   InteractionContextType,
+  MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
 
@@ -11,6 +12,7 @@ import { Game } from "@prisma/client";
 
 import { Command, prisma } from "..";
 
+import { gameAutocomplete } from "../util/gameAutocomplete";
 import { registerUser } from "../util/registerUser";
 
 const gameEmbedBuilder = (game: Game): APIEmbed => {
@@ -18,7 +20,7 @@ const gameEmbedBuilder = (game: Game): APIEmbed => {
     description: game.description ?? undefined,
     fields: [
       { inline: true, name: "Players", value: `${game.minPlayers} - ${game.maxPlayers}` },
-      { inline: true, name: "Is free?", value: game.isFree ? "Yes" : "No" },
+      { inline: true, name: "Free?", value: game.free ? "Yes" : "No" },
     ],
     footer: { text: "Rate the game from 1 to 5." },
     image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
@@ -48,7 +50,7 @@ export const rateSingleGame: Command = {
   execute: async (interaction) => {
     const guildId = interaction.guildId;
     if (!guildId) {
-      await interaction.reply({ content: "This command can only be used in a server.", ephemeral: true });
+      await interaction.reply({ content: "This command can only be used in a server.", flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -69,12 +71,12 @@ export const rateSingleGame: Command = {
         },
       });
     } catch {
-      await interaction.reply({ content: `Could not find game "${name}". Try selecting from the autocomplete options.`, ephemeral: true });
+      await interaction.reply({ content: `Could not find game "${name}". Try selecting from the autocomplete options.`, flags: MessageFlags.Ephemeral });
       return;
     }
 
     if (!game) {
-      await interaction.reply({ content: "Game not found.", ephemeral: true });
+      await interaction.reply({ content: "Game not found.", flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -113,7 +115,7 @@ export const rateSingleGame: Command = {
         },
       ],
       embeds: [gameEmbedBuilder(game)],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     try {
@@ -148,17 +150,5 @@ export const rateSingleGame: Command = {
     }
   },
 
-  autocomplete: async (interaction) => {
-    const guildId = interaction.guildId;
-    if (!guildId) return;
-
-    const focusedValue = interaction.options.getFocused();
-    const games = await prisma.game.findMany({
-      where: { guildId, name: { contains: focusedValue, mode: "insensitive" } },
-    });
-
-    await interaction.respond(
-      games.map(game => ({ name: game.name, value: game.id })),
-    );
-  },
+  autocomplete: gameAutocomplete,
 };
