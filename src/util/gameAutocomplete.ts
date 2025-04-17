@@ -14,6 +14,6 @@ export const gameAutocomplete = async (interaction: AutocompleteInteraction) => 
   });
 
   await interaction.respond(games.map(game => ({
-    name: `${game.name} - (${game.minPlayers} - ${game.maxPlayers})`, value: game.id,
+    name: `${game.name} - (Players: ${game.minPlayers} - ${game.maxPlayers})`, value: game.id,
   })));
 };
