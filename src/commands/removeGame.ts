@@ -9,7 +9,7 @@ const gameEmbedBuilder = (game: Game): APIEmbed => {
     description: game.description ?? undefined,
     fields: [
       { inline: true, name: "Number of players", value: game.numPlayers.toString() },
-      { inline: true, name: "Is free?", value: game.isFree ? "Yes" : "No" },
+      { inline: true, name: "Free?", value: game.free ? "Yes" : "No" },
     ],
     footer: { text: "Remove this game?" },
     image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,

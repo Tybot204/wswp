@@ -22,7 +22,7 @@ const gameEmbedBuilder = (game: Game): APIEmbed => {
         name: "Number of players",
         value: game.numPlayers.toString(),
       },
-      { inline: true, name: "Is free?", value: game.isFree ? "Yes" : "No" },
+      { inline: true, name: "Free?", value: game.free ? "Yes" : "No" },
     ],
     footer: { text: "Rate the game from 1 to 5." },
     image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
