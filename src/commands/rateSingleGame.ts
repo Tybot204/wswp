@@ -19,11 +19,7 @@ const gameEmbedBuilder = (game: Game): APIEmbed => {
   return {
     description: game.description ?? undefined,
     fields: [
-      {
-        inline: true,
-        name: "Number of players",
-        value: game.numPlayers.toString(),
-      },
+      { inline: true, name: "Players", value: `${game.minPlayers} - ${game.maxPlayers}` },
       { inline: true, name: "Free?", value: game.free ? "Yes" : "No" },
     ],
     footer: { text: "Rate the game from 1 to 5." },
