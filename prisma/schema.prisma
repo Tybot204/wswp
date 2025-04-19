@@ -15,7 +15,7 @@ datasource db {
 }
 
 model Game {
-  id String @id @default(uuid()) @db.Uuid
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
   free       Boolean @default(false)
   guildId    String  @map("guild_id")
@@ -30,7 +30,7 @@ model Game {
   thumbnailImageURL String? @map("thumbnail_image_url")
 
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
   createdById String @map("created_by_id") @db.Uuid
   createdBy   User   @relation(fields: [createdById], references: [id])
@@ -41,7 +41,7 @@ model Game {
 }
 
 model Rating {
-  id String @id @default(uuid()) @db.Uuid
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
   score Int
 
@@ -56,12 +56,12 @@ model Rating {
 }
 
 model User {
-  id String @id @default(uuid()) @db.Uuid
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
   discordId String @unique @map("discord_id")
 
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
   games   Game[]
   ratings Rating[]
