@@ -4,9 +4,13 @@
     "build": "webpack",
     "db:generate": "prisma migrate dev --create-only",
     "db:migrate": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
     "lint": "eslint .",
     "start": "node build/bundle.js",
     "start:dev": "nodemon src/index.ts"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.3.1",
@@ -15,6 +19,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",
+    "@faker-js/faker": "^9.7.0",
     "@stylistic/eslint-plugin": "^3.1.0",
     "@types/node": "^22.14.1",
     "@types/webpack": "^5.28.5",
