@@ -5,6 +5,8 @@ const prisma = new PrismaClient();
 
 const NUM_USERS = 10;
 const NUM_GUILDS = 3;
+const NUM_RANDOM_GAMES = 10;
+const NUM_RATINGS_PER_USER = 5;
 
 (async () => {
   const users = await prisma.user.createManyAndReturn({
@@ -19,6 +21,14 @@ const NUM_GUILDS = 3;
 
   const games = await prisma.game.createManyAndReturn({
     data: [
+      ...[...Array(NUM_RANDOM_GAMES)].map(() => {
+        return {
+          createdById: faker.helpers.arrayElement(users).id,
+          guildId: faker.helpers.arrayElement(guildIds),
+          maxPlayers: faker.number.int({ min: 1, max: 16 }),
+          name: faker.commerce.productName(),
+        };
+      }),
       {
         bannerImageURL: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/113020/header.jpg?t=1741126657",
         createdById: faker.helpers.arrayElement(users).id,
@@ -53,16 +63,22 @@ const NUM_GUILDS = 3;
         name: "Minecraft",
       },
     ],
+    select: { id: true },
   });
 
   await prisma.rating.createMany({
-    data: [...Array(NUM_USERS / 2)].map((i) => {
-      return {
-        gameId: faker.helpers.arrayElement(games).id,
-        score: faker.number.int({ min: 1, max: 5 }),
-        userId: users[i].id,
-      };
-    }),
+    data: [...[...Array(NUM_USERS / 2)].map((_, i) => {
+      const usedGames: { id: string }[] = [];
+      return [...Array(NUM_RATINGS_PER_USER)].map(() => {
+        const game = faker.helpers.arrayElement(games.filter(game => !usedGames.includes(game)));
+        usedGames.push(game);
+        return {
+          gameId: game.id,
+          score: faker.number.int({ min: 1, max: 5 }),
+          userId: users[i].id,
+        };
+      });
+    })].flat(),
   });
 })().then(async () => {
   await prisma.$disconnect();
