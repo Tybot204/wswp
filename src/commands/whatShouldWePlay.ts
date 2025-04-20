@@ -13,10 +13,16 @@ builder.addStringOption(option =>
     .setRequired(true),
 );
 
+builder.addBooleanOption(option =>
+  option.setName("ignoremaxplayers")
+    .setDescription("Ignore max player constraints when searching for a game."),
+);
+
 export const whatShouldWePlay: Command = {
   builder,
   execute: async (interaction) => {
     const rawPlayers = interaction.options.getString("players");
+    const ignoreMaxPlayers = interaction.options.getBoolean("ignoremaxplayers");
     const matchedPlayers = rawPlayers?.match(/<@[^&]([^>]+)/g);
 
     if (!matchedPlayers) {
@@ -42,7 +48,7 @@ export const whatShouldWePlay: Command = {
       take: 1,
       where: {
         game: {
-          maxPlayers: { gte: matchedPlayers.length },
+          maxPlayers: ignoreMaxPlayers ? undefined : { gte: matchedPlayers.length },
           minPlayers: { lte: matchedPlayers.length },
           released: true,
         },
