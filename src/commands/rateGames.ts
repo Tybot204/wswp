@@ -1,5 +1,4 @@
 import {
-  APIEmbed,
   ButtonBuilder,
   ButtonStyle,
   ComponentType,
@@ -8,28 +7,10 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 
-import { Prisma } from "@prisma/client";
-
 import { Command, prisma } from "..";
 
+import { gameDetailsEmbedBuilder } from "../util/embedTemplates";
 import { registerUser } from "../util/registerUser";
-
-type GameWithGameResource = Prisma.GameGetPayload<{ include: { gameResource: true } }>;
-
-const gameEmbedBuilder = (game: GameWithGameResource): APIEmbed => {
-  return {
-    description: game.gameResource?.description ?? undefined,
-    fields: [
-      { inline: true, name: "Players", value: `${game.minPlayers} - ${game.maxPlayers}` },
-      { inline: true, name: "Free?", value: game.free ? "Yes" : "No" },
-    ],
-    footer: { text: "Rate the game from 1 to 5." },
-    image: game.gameResource?.bannerImageURL ? { url: game.gameResource?.bannerImageURL } : undefined,
-    title: game.name,
-    thumbnail: game.gameResource?.thumbnailImageURL ? { url: game.gameResource?.thumbnailImageURL } : undefined,
-    url: game.gameURL ?? undefined,
-  };
-};
 
 const builder = new SlashCommandBuilder()
   .setName("rategames")
@@ -78,7 +59,10 @@ export const rateGames: Command = {
         components: [buttonOne, buttonTwo, buttonThree, buttonFour, buttonFive],
         type: ComponentType.ActionRow,
       }],
-      embeds: [gameEmbedBuilder(game)],
+      embeds: [{
+        ...gameDetailsEmbedBuilder(game),
+        footer: { text: "Rate the game from 1 to 5." },
+      }],
       flags: MessageFlags.Ephemeral,
     });
 
@@ -100,7 +84,12 @@ export const rateGames: Command = {
           break;
         }
 
-        await ratingChoice.update({ embeds: [gameEmbedBuilder(game)] });
+        await ratingChoice.update({
+          embeds: [{
+            ...gameDetailsEmbedBuilder(game),
+            footer: { text: "Rate the game from 1 to 5." },
+          }],
+        });
       } catch {
         await reply.edit({
           content: "Rating timed out. Type `/rategames` again to resume.",

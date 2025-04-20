@@ -1,5 +1,4 @@
 import {
-  APIEmbed,
   ButtonBuilder,
   ButtonStyle,
   ComponentType,
@@ -12,23 +11,9 @@ import { Game, Prisma } from "@prisma/client";
 
 import { Command, prisma } from "..";
 import { gameAutocomplete } from "../util/gameAutocomplete";
+import { gameDetailsEmbedBuilder } from "../util/embedTemplates";
 
 type GameWithGameResource = Prisma.GameGetPayload<{ include: { gameResource: true } }>;
-
-const gameEmbedBuilder = (game: GameWithGameResource): APIEmbed => {
-  return {
-    description: game.gameResource?.description ?? undefined,
-    fields: [
-      { inline: true, name: "Players", value: `${game.minPlayers} - ${game.maxPlayers}` },
-      { inline: true, name: "Free?", value: game.free ? "Yes" : "No" },
-    ],
-    footer: { text: "Remove this game?" },
-    image: game.gameResource?.bannerImageURL ? { url: game.gameResource?.bannerImageURL } : undefined,
-    title: game.name,
-    thumbnail: game.gameResource?.thumbnailImageURL ? { url: game.gameResource?.thumbnailImageURL } : undefined,
-    url: game.gameURL ?? undefined,
-  };
-};
 
 const builder = new SlashCommandBuilder()
   .setName("removegame")
@@ -94,7 +79,10 @@ export const removeGame: Command = {
       const reply = await interaction.reply({
         components: [{ components: [buttonNo, buttonYes], type: ComponentType.ActionRow }],
         content: "Multiple games by that name found. Remove this game?",
-        embeds: [gameEmbedBuilder(game)],
+        embeds: [{
+          ...gameDetailsEmbedBuilder(game),
+          footer: { text: "Remove this game?" },
+        }],
         flags: MessageFlags.Ephemeral,
       });
 
@@ -122,7 +110,12 @@ export const removeGame: Command = {
             break;
           }
 
-          await removeChoice.update({ embeds: [gameEmbedBuilder(game)] });
+          await removeChoice.update({
+            embeds: [{
+              ...gameDetailsEmbedBuilder(game),
+              footer: { text: "Remove this game?" },
+            }],
+          });
         } catch {
           await reply.edit({
             content: "Removal timed out. Type `/removegame` again to resume.",
