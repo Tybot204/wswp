@@ -84,7 +84,7 @@ export const whatShouldWePlay: Command = {
 
     const fields: APIEmbedField[] = [];
     if (game.gameURL) fields.push({ name: "URL:", value: game.gameURL });
-    fields.push({ inline: true, name: "Rating (Average)", value: totalRatings[0]._avg.score?.toString() });
+    fields.push({ inline: true, name: "Rating (Average)", value: totalRatings[0]._avg.score?.toFixed(2) });
     fields.push({ inline: true, name: "Free?", value: game.free ? "Yes" : "No" });
     fields.push({ inline: true, name: "Players", value: `${game.minPlayers} - ${game.maxPlayers}` });
 
