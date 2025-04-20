@@ -8,25 +8,27 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 
-import { Game } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import { Command, prisma } from "..";
 
 import { gameAutocomplete } from "../util/gameAutocomplete";
 import { registerUser } from "../util/registerUser";
 
-const gameEmbedBuilder = (game: Game): APIEmbed => {
+type GameWithGameResource = Prisma.GameGetPayload<{ include: { gameResource: true } }>;
+
+const gameEmbedBuilder = (game: GameWithGameResource): APIEmbed => {
   return {
-    description: game.description ?? undefined,
+    description: game.gameResource?.description ?? undefined,
     fields: [
       { inline: true, name: "Players", value: `${game.minPlayers} - ${game.maxPlayers}` },
       { inline: true, name: "Free?", value: game.free ? "Yes" : "No" },
     ],
     footer: { text: "Rate the game from 1 to 5." },
-    image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
+    image: game.gameResource?.bannerImageURL ? { url: game.gameResource?.bannerImageURL } : undefined,
     title: game.name,
-    thumbnail: game.thumbnailImageURL
-      ? { url: game.thumbnailImageURL }
+    thumbnail: game.gameResource?.thumbnailImageURL
+      ? { url: game.gameResource?.thumbnailImageURL }
       : undefined,
     url: game.gameURL ?? undefined,
   };
@@ -50,7 +52,10 @@ export const rateSingleGame: Command = {
   execute: async (interaction) => {
     const guildId = interaction.guildId;
     if (!guildId) {
-      await interaction.reply({ content: "This command can only be used in a server.", flags: MessageFlags.Ephemeral });
+      await interaction.reply({
+        content: "This command can only be used in a server.",
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
 
@@ -64,6 +69,7 @@ export const rateSingleGame: Command = {
       game = await prisma.game.findUnique({
         where: { id: name },
         include: {
+          gameResource: true,
           ratings: {
             select: { score: true },
             where: { user: { discordId: user.id } },
@@ -71,7 +77,10 @@ export const rateSingleGame: Command = {
         },
       });
     } catch {
-      await interaction.reply({ content: `Could not find game "${name}". Try selecting from the autocomplete options.`, flags: MessageFlags.Ephemeral });
+      await interaction.reply({
+        content: `Could not find game "${name}". Try selecting from the autocomplete options.`,
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
 

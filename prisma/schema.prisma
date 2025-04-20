@@ -24,10 +24,7 @@ model Game {
   minPlayers Int     @default(1) @map("min_players")
   released   Boolean @default(true)
 
-  bannerImageURL    String? @map("banner_image_url")
-  description       String?
-  gameURL           String? @map("game_url")
-  thumbnailImageURL String? @map("thumbnail_image_url")
+  gameURL String? @map("game_url")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
@@ -35,9 +32,39 @@ model Game {
   createdById String @map("created_by_id") @db.Uuid
   createdBy   User   @relation(fields: [createdById], references: [id])
 
+  gameResourceId String?       @map("game_resource_id") @db.Uuid
+  gameResource   GameResource? @relation(fields: [gameResourceId], references: [id])
+
   ratings Rating[]
 
   @@map("games")
+}
+
+enum GamePlatform {
+  STEAM
+
+  @@map("game_platform")
+}
+
+model GameResource {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  externalId String       @map("external_id")
+  free       Boolean      @default(false)
+  platform   GamePlatform
+  released   Boolean      @default(true)
+
+  bannerImageURL    String? @map("banner_image_url")
+  description       String?
+  thumbnailImageURL String? @map("thumbnail_image_url")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  game Game[]
+
+  @@unique([externalId, platform], name: "externalIdPlatform")
+  @@map("game_resources")
 }
 
 model Rating {

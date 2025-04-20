@@ -4,13 +4,15 @@
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "lib": ["esnext", "dom"],
+    "lib": [
+      "ESNext"
+    ],
     "module": "commonjs",
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "outDir": "build",
     "sourceMap": true,
     "strict": true,
-    "target": "es2017"
+    "target": "ES2024"
   }
 }

@@ -26,7 +26,10 @@ export const whatShouldWePlay: Command = {
 
     const guild = interaction.guild;
     if (!guild) {
-      await interaction.reply({ content: "This command can only be used in a server.", flags: MessageFlags.Ephemeral });
+      await interaction.reply({
+        content: "This command can only be used in a server.",
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
 
@@ -38,17 +41,27 @@ export const whatShouldWePlay: Command = {
       orderBy: { _avg: { score: "desc" } },
       take: 1,
       where: {
-        game: { maxPlayers: { gte: matchedPlayers.length }, minPlayers: { lte: matchedPlayers.length }, released: true },
+        game: {
+          maxPlayers: { gte: matchedPlayers.length },
+          minPlayers: { lte: matchedPlayers.length },
+          released: true,
+        },
         user: { discordId: { in: discordMembers.map(member => member.user.id) } },
       },
     });
 
     if (totalRatings[0]._avg.score === null) {
-      await interaction.reply({ content: "No ratings found for the given number of players.", flags: MessageFlags.Ephemeral });
+      await interaction.reply({
+        content: "No ratings found for the given number of players.",
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
 
-    const game = await prisma.game.findUnique({ where: { id: totalRatings[0].gameId } });
+    const game = await prisma.game.findUnique({
+      include: { gameResource: true },
+      where: { id: totalRatings[0].gameId },
+    });
     if (!game) {
       await interaction.reply({ content: "Something went wrong... Please try again.", flags: MessageFlags.Ephemeral });
       return;
@@ -90,12 +103,12 @@ export const whatShouldWePlay: Command = {
 
     await interaction.reply({
       embeds: [{
-        description: game.description ?? undefined,
+        description: game.gameResource?.description ?? undefined,
         fields,
-        image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
+        image: game.gameResource?.bannerImageURL ? { url: game.gameResource?.bannerImageURL } : undefined,
         footer: footerText ? { text: footerText } : undefined,
         title: game.name,
-        thumbnail: game.thumbnailImageURL ? { url: game.thumbnailImageURL } : undefined,
+        thumbnail: game.gameResource?.thumbnailImageURL ? { url: game.gameResource?.thumbnailImageURL } : undefined,
         url: game.gameURL ?? undefined,
       }],
     });
