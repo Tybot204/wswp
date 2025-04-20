@@ -26,7 +26,7 @@ const gameEmbedBuilder = async (game: getGamesByAvgRating.Result): Promise<APIEm
       {
         inline: true,
         name: "Rating (Average)",
-        value: game.avg_score?.toString() || "No ratings yet",
+        value: game.avg_score?.toFixed(2) || "No ratings yet",
       },
       { inline: true, name: "Players", value: `${game.min_players} - ${game.max_players}` },
     ],
