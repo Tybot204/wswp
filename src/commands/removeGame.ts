@@ -119,7 +119,7 @@ export const removeGame: Command = {
             }
 
             await removeChoice.update({ content, components: [], embeds: [] });
-            return;
+            break;
           }
 
           await removeChoice.update({ embeds: [gameEmbedBuilder(game)] });
@@ -129,7 +129,7 @@ export const removeGame: Command = {
             components: [],
             embeds: [],
           });
-          return;
+          break;
         }
       }
     }

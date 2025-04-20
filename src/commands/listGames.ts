@@ -118,6 +118,7 @@ export const listGames: Command = {
         });
       } catch {
         await reply.edit({ content: "List timed out. Type `/listgames` again to restart.", components: [] });
+        break;
       }
     }
   },
