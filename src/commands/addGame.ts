@@ -1,6 +1,6 @@
 import { InteractionContextType, MessageFlags, SlashCommandBuilder } from "discord.js";
 
-import { Prisma } from "@prisma/client";
+import { GamePlatform, Prisma } from "@prisma/client";
 
 import { Command, prisma, steam } from "..";
 
@@ -84,18 +84,36 @@ export const addGame: Command = {
 
       const steamGameId = parseInt(url.match(/(?:https?:\/\/store\.steampowered\.com\/app\/)(\d+)/)?.[1] || "");
       if (steamGameId) {
-        try {
-          const response = await steam.getGameDetails(steamGameId) as unknown as SteamGameDetails;
+        const gameResource = await prisma.gameResource.findUnique({
+          where: { externalIdPlatform: { externalId: steamGameId.toString(), platform: GamePlatform.STEAM } },
+        });
 
-          gameData.description = response.short_description;
-          gameData.free = response.is_free;
-          gameData.released = !response.release_date.coming_soon;
-          gameData.bannerImageURL = response.header_image;
-          gameData.thumbnailImageURL = response.capsule_image;
-        } catch {
-          // Do nothing. Steam integration is for bonus information and is not required.
-          // TODO: Should we alert the user that the Steam integration failed?
-          //       What if they provided a non-Steam URL?
+        if (gameResource) {
+          gameData.gameResource = { connect: { id: gameResource.id } };
+          gameData.free = gameResource.free;
+          gameData.released = gameResource.released;
+        } else {
+          try {
+            const response = await steam.getGameDetails(steamGameId) as unknown as SteamGameDetails;
+
+            gameData.gameResource = {
+              create: {
+                bannerImageURL: response.header_image,
+                description: response.short_description,
+                externalId: steamGameId.toString(),
+                free: response.is_free,
+                platform: GamePlatform.STEAM,
+                released: !response.release_date.coming_soon,
+                thumbnailImageURL: response.capsule_image,
+              },
+            };
+            gameData.free = response.is_free;
+            gameData.released = !response.release_date.coming_soon;
+          } catch {
+            // Do nothing. Steam integration is for bonus information and is not required.
+            // TODO: Should we alert the user that the Steam integration failed?
+            //       What if they provided a non-Steam URL?
+          }
         }
       }
     }
@@ -107,20 +125,20 @@ export const addGame: Command = {
     const free = interaction.options.getBoolean("free");
     if (free !== null) gameData.free = free;
 
-    const game = await prisma.game.create({ data: gameData });
+    const game = await prisma.game.create({ data: gameData, include: { gameResource: true } });
 
     await interaction.reply({
       embeds: [{
-        description: game.description ?? undefined,
+        description: game.gameResource?.description ?? undefined,
         fields: [
           { inline: true, name: "Released", value: game.released ? "Yes" : "No" },
           { inline: true, name: "Free?", value: game.free ? "Yes" : "No" },
           { inline: true, name: "Players", value: `${game.minPlayers} - ${game.maxPlayers}` },
         ],
         footer: { text: "Game successfully added." },
-        image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
+        image: game.gameResource?.bannerImageURL ? { url: game.gameResource?.bannerImageURL } : undefined,
         title: game.name,
-        thumbnail: game.thumbnailImageURL ? { url: game.thumbnailImageURL } : undefined,
+        thumbnail: game.gameResource?.thumbnailImageURL ? { url: game.gameResource?.thumbnailImageURL } : undefined,
         url: game.gameURL ?? undefined,
       }],
     });

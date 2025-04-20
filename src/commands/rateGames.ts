@@ -1,22 +1,32 @@
-import { APIEmbed, ButtonBuilder, ButtonStyle, ComponentType, InteractionContextType, MessageFlags, SlashCommandBuilder } from "discord.js";
+import {
+  APIEmbed,
+  ButtonBuilder,
+  ButtonStyle,
+  ComponentType,
+  InteractionContextType,
+  MessageFlags,
+  SlashCommandBuilder,
+} from "discord.js";
 
-import { Game } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import { Command, prisma } from "..";
 
 import { registerUser } from "../util/registerUser";
 
-const gameEmbedBuilder = (game: Game): APIEmbed => {
+type GameWithGameResource = Prisma.GameGetPayload<{ include: { gameResource: true } }>;
+
+const gameEmbedBuilder = (game: GameWithGameResource): APIEmbed => {
   return {
-    description: game.description ?? undefined,
+    description: game.gameResource?.description ?? undefined,
     fields: [
       { inline: true, name: "Players", value: `${game.minPlayers} - ${game.maxPlayers}` },
       { inline: true, name: "Free?", value: game.free ? "Yes" : "No" },
     ],
     footer: { text: "Rate the game from 1 to 5." },
-    image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
+    image: game.gameResource?.bannerImageURL ? { url: game.gameResource?.bannerImageURL } : undefined,
     title: game.name,
-    thumbnail: game.thumbnailImageURL ? { url: game.thumbnailImageURL } : undefined,
+    thumbnail: game.gameResource?.thumbnailImageURL ? { url: game.gameResource?.thumbnailImageURL } : undefined,
     url: game.gameURL ?? undefined,
   };
 };
@@ -26,14 +36,21 @@ const builder = new SlashCommandBuilder()
   .setDescription("Rate all unrated games for your current user.")
   .setContexts(InteractionContextType.Guild);
 
-builder.addBooleanOption(option => option.setName("all").setDescription("Rate all games again and replace existing ratings."));
+builder.addBooleanOption(option =>
+  option
+    .setName("all")
+    .setDescription("Rate all games again and replace existing ratings."),
+);
 
 export const rateGames: Command = {
   builder,
   execute: async (interaction) => {
     const guildId = interaction.guildId;
     if (!guildId) {
-      await interaction.reply({ content: "This command can only be used in a server.", flags: MessageFlags.Ephemeral });
+      await interaction.reply({
+        content: "This command can only be used in a server.",
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
 
@@ -41,7 +58,7 @@ export const rateGames: Command = {
 
     const rateAll = interaction.options.getBoolean("all") ?? false;
     const gameWhere = rateAll ? { guildId } : { guildId, ratings: { none: { userId: user.id } } };
-    const games = await prisma.game.findMany({ where: gameWhere });
+    const games = await prisma.game.findMany({ include: { gameResource: true }, where: gameWhere });
 
     const buttonOne = new ButtonBuilder().setCustomId("1").setLabel("1").setStyle(ButtonStyle.Danger);
     const buttonTwo = new ButtonBuilder().setCustomId("2").setLabel("2").setStyle(ButtonStyle.Secondary);
@@ -57,14 +74,19 @@ export const rateGames: Command = {
     }
 
     const reply = await interaction.reply({
-      components: [{ components: [buttonOne, buttonTwo, buttonThree, buttonFour, buttonFive], type: ComponentType.ActionRow }],
+      components: [{
+        components: [buttonOne, buttonTwo, buttonThree, buttonFour, buttonFive],
+        type: ComponentType.ActionRow,
+      }],
       embeds: [gameEmbedBuilder(game)],
       flags: MessageFlags.Ephemeral,
     });
 
     while (true) {
       try {
-        const ratingChoice = await reply.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 30000 });
+        const ratingChoice = await reply.awaitMessageComponent({
+          filter: i => i.user.id === interaction.user.id, time: 30000,
+        });
 
         await prisma.rating.upsert({
           create: { gameId: game.id, score: parseInt(ratingChoice.customId), userId: user.id },
@@ -80,7 +102,11 @@ export const rateGames: Command = {
 
         await ratingChoice.update({ embeds: [gameEmbedBuilder(game)] });
       } catch {
-        await reply.edit({ content: "Rating timed out. Type `/rategames` again to resume.", components: [], embeds: [] });
+        await reply.edit({
+          content: "Rating timed out. Type `/rategames` again to resume.",
+          components: [],
+          embeds: [],
+        });
         break;
       }
     }

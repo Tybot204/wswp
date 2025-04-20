@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { GamePlatform, PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 
 const prisma = new PrismaClient();
@@ -19,6 +19,32 @@ const NUM_RATINGS_PER_USER = 5;
     return faker.string.numeric(18);
   });
 
+  const steamIdGTFO = "493520";
+  const gameResourceGTFO = await prisma.gameResource.upsert({
+    create: {
+      bannerImageURL: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamIdGTFO}/header.jpg?t=1728027032`,
+      description: "GTFO is a hardcore cooperative horror shooter that throws you from gripping suspense to explosive action in a heartbeat. Stealth, strategy, and teamwork are necessary to survive in your deadly, underground prison. Work together or die together.",
+      externalId: steamIdGTFO,
+      platform: GamePlatform.STEAM,
+      thumbnailImageURL: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamIdGTFO}/a90c1895f07c2ea0075f3295540701a17981a83a/capsule_231x87.jpg?t=1728027032`,
+    },
+    update: {},
+    where: { externalIdPlatform: { externalId: steamIdGTFO, platform: GamePlatform.STEAM } },
+  });
+
+  const steamIdMonaco = "113020";
+  const gameResourceMonaco = await prisma.gameResource.upsert({
+    create: {
+      bannerImageURL: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamIdMonaco}/header.jpg?t=1741126657`,
+      description: "Monaco: What's Yours Is Mine is a single player or co-op heist game. Assemble a crack team of thieves, case the joint, and pull off the perfect heist.",
+      externalId: steamIdMonaco,
+      platform: GamePlatform.STEAM,
+      thumbnailImageURL: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamIdMonaco}/capsule_231x87.jpg?t=1741126657`,
+    },
+    update: {},
+    where: { externalIdPlatform: { externalId: steamIdMonaco, platform: GamePlatform.STEAM } },
+  });
+
   const games = await prisma.game.createManyAndReturn({
     data: [
       ...[...Array(NUM_RANDOM_GAMES)].map(() => {
@@ -30,32 +56,26 @@ const NUM_RATINGS_PER_USER = 5;
         };
       }),
       {
-        bannerImageURL: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/113020/header.jpg?t=1741126657",
         createdById: faker.helpers.arrayElement(users).id,
-        description: "Monaco: What's Yours Is Mine is a single player or co-op heist game. Assemble a crack team of thieves, case the joint, and pull off the perfect heist.",
+        gameResourceId: gameResourceMonaco.id,
         gameURL: "https://store.steampowered.com/app/113020/Monaco_Whats_Yours_Is_Mine",
         guildId: faker.helpers.arrayElement(guildIds),
         maxPlayers: 4,
         name: "Monaco: What's Yours Is Mine",
-        thumbnailImageURL: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/113020/capsule_231x87.jpg?t=1741126657",
       }, {
-        bannerImageURL: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/493520/header.jpg?t=1728027032",
         createdById: faker.helpers.arrayElement(users).id,
-        description: "GTFO is a hardcore cooperative horror shooter that throws you from gripping suspense to explosive action in a heartbeat. Stealth, strategy, and teamwork are necessary to survive in your deadly, underground prison. Work together or die together.",
+        gameResourceId: gameResourceGTFO.id,
         gameURL: "https://store.steampowered.com/app/493520/GTFO",
         guildId: faker.helpers.arrayElement(guildIds),
         maxPlayers: 4,
         name: "GTFO",
-        thumbnailImageURL: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/493520/a90c1895f07c2ea0075f3295540701a17981a83a/capsule_231x87.jpg?t=1728027032",
       }, {
-        bannerImageURL: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/493520/header.jpg?t=1728027032",
         createdById: faker.helpers.arrayElement(users).id,
-        description: "GTFO is a hardcore cooperative horror shooter that throws you from gripping suspense to explosive action in a heartbeat. Stealth, strategy, and teamwork are necessary to survive in your deadly, underground prison. Work together or die together.",
+        gameResourceId: gameResourceGTFO.id,
         gameURL: "https://store.steampowered.com/app/493520/GTFO",
         guildId: faker.helpers.arrayElement(guildIds),
         maxPlayers: 4,
         name: "GTFO (Duplicate)",
-        thumbnailImageURL: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/493520/a90c1895f07c2ea0075f3295540701a17981a83a/capsule_231x87.jpg?t=1728027032",
       }, {
         createdById: faker.helpers.arrayElement(users).id,
         guildId: faker.helpers.arrayElement(guildIds),

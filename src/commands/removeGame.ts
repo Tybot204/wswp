@@ -1,21 +1,31 @@
-import { APIEmbed, ButtonBuilder, ButtonStyle, ComponentType, InteractionContextType, MessageFlags, SlashCommandBuilder } from "discord.js";
+import {
+  APIEmbed,
+  ButtonBuilder,
+  ButtonStyle,
+  ComponentType,
+  InteractionContextType,
+  MessageFlags,
+  SlashCommandBuilder,
+} from "discord.js";
 
-import { Game } from "@prisma/client";
+import { Game, Prisma } from "@prisma/client";
 
 import { Command, prisma } from "..";
 import { gameAutocomplete } from "../util/gameAutocomplete";
 
-const gameEmbedBuilder = (game: Game): APIEmbed => {
+type GameWithGameResource = Prisma.GameGetPayload<{ include: { gameResource: true } }>;
+
+const gameEmbedBuilder = (game: GameWithGameResource): APIEmbed => {
   return {
-    description: game.description ?? undefined,
+    description: game.gameResource?.description ?? undefined,
     fields: [
       { inline: true, name: "Players", value: `${game.minPlayers} - ${game.maxPlayers}` },
       { inline: true, name: "Free?", value: game.free ? "Yes" : "No" },
     ],
     footer: { text: "Remove this game?" },
-    image: game.bannerImageURL ? { url: game.bannerImageURL } : undefined,
+    image: game.gameResource?.bannerImageURL ? { url: game.gameResource?.bannerImageURL } : undefined,
     title: game.name,
-    thumbnail: game.thumbnailImageURL ? { url: game.thumbnailImageURL } : undefined,
+    thumbnail: game.gameResource?.thumbnailImageURL ? { url: game.gameResource?.thumbnailImageURL } : undefined,
     url: game.gameURL ?? undefined,
   };
 };
@@ -37,7 +47,10 @@ export const removeGame: Command = {
   execute: async (interaction) => {
     const guildId = interaction.guildId;
     if (!guildId) {
-      await interaction.reply({ content: "This command can only be used in a server.", flags: MessageFlags.Ephemeral });
+      await interaction.reply({
+        content: "This command can only be used in a server.",
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
 
@@ -46,17 +59,26 @@ export const removeGame: Command = {
     // Ensure required options are provided. This should never happen.
     if (!gameNameOrID) return;
 
-    let game: Game | undefined;
+    let game: GameWithGameResource | undefined;
     try {
-      game = await prisma.game.delete({ where: { id: gameNameOrID } });
+      game = await prisma.game.delete({
+        include: { gameResource: true },
+        where: { id: gameNameOrID },
+      });
       await interaction.reply(`${game.name} has been removed.`);
     } catch {
-      const games = await prisma.game.findMany({ where: { name: gameNameOrID } });
+      const games = await prisma.game.findMany({
+        include: { gameResource: true },
+        where: { name: gameNameOrID },
+      });
 
       game = games.shift();
 
       if (!game) {
-        await interaction.reply({ content: `Could not find game "${gameNameOrID}". Try selecting from the autocomplete options.`, flags: MessageFlags.Ephemeral });
+        await interaction.reply({
+          content: `Could not find game "${gameNameOrID}". Try selecting from the autocomplete options.`,
+          flags: MessageFlags.Ephemeral,
+        });
         return;
       }
 
@@ -79,7 +101,9 @@ export const removeGame: Command = {
       const removedGames: Game[] = [];
       while (true) {
         try {
-          const removeChoice = await reply.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 30000 });
+          const removeChoice = await reply.awaitMessageComponent({
+            filter: i => i.user.id === interaction.user.id, time: 30000,
+          });
 
           if (removeChoice.customId === "yes") {
             await prisma.game.delete({ where: { id: game.id } });
@@ -100,7 +124,11 @@ export const removeGame: Command = {
 
           await removeChoice.update({ embeds: [gameEmbedBuilder(game)] });
         } catch {
-          await reply.edit({ content: "Removal timed out. Type `/removegame` again to resume.", components: [], embeds: [] });
+          await reply.edit({
+            content: "Removal timed out. Type `/removegame` again to resume.",
+            components: [],
+            embeds: [],
+          });
           return;
         }
       }
