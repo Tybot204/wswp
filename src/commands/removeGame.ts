@@ -79,10 +79,7 @@ export const removeGame: Command = {
       const reply = await interaction.reply({
         components: [{ components: [buttonNo, buttonYes], type: ComponentType.ActionRow }],
         content: "Multiple games by that name found. Remove this game?",
-        embeds: [{
-          ...gameDetailsEmbedBuilder(game),
-          footer: { text: "Remove this game?" },
-        }],
+        embeds: [gameDetailsEmbedBuilder(game, "Remove this game?")],
         flags: MessageFlags.Ephemeral,
       });
 
@@ -111,10 +108,7 @@ export const removeGame: Command = {
           }
 
           await removeChoice.update({
-            embeds: [{
-              ...gameDetailsEmbedBuilder(game),
-              footer: { text: "Remove this game?" },
-            }],
+            embeds: [gameDetailsEmbedBuilder(game, "Remove this game?")],
           });
         } catch {
           await reply.edit({

@@ -9,7 +9,7 @@ import {
 
 import { Command, prisma } from "..";
 
-import { gameDetailsEmbedBuilder } from "../util/embedTemplates";
+import { gameRatingEmbedBuilder } from "../util/embedTemplates";
 import { registerUser } from "../util/registerUser";
 
 const builder = new SlashCommandBuilder()
@@ -39,7 +39,16 @@ export const rateGames: Command = {
 
     const rateAll = interaction.options.getBoolean("all") ?? false;
     const gameWhere = rateAll ? { guildId } : { guildId, ratings: { none: { userId: user.id } } };
-    const games = await prisma.game.findMany({ include: { gameResource: true }, where: gameWhere });
+    const games = await prisma.game.findMany({
+      include: {
+        gameResource: true,
+        ratings: {
+          select: { score: true },
+          where: { user: { id: user.id } },
+        },
+      },
+      where: gameWhere,
+    });
 
     const buttonOne = new ButtonBuilder().setCustomId("1").setLabel("1").setStyle(ButtonStyle.Danger);
     const buttonTwo = new ButtonBuilder().setCustomId("2").setLabel("2").setStyle(ButtonStyle.Secondary);
@@ -59,10 +68,7 @@ export const rateGames: Command = {
         components: [buttonOne, buttonTwo, buttonThree, buttonFour, buttonFive],
         type: ComponentType.ActionRow,
       }],
-      embeds: [{
-        ...gameDetailsEmbedBuilder(game),
-        footer: { text: "Rate the game from 1 to 5." },
-      }],
+      embeds: [gameRatingEmbedBuilder(game, game.ratings[0])],
       flags: MessageFlags.Ephemeral,
     });
 
@@ -84,12 +90,7 @@ export const rateGames: Command = {
           break;
         }
 
-        await ratingChoice.update({
-          embeds: [{
-            ...gameDetailsEmbedBuilder(game),
-            footer: { text: "Rate the game from 1 to 5." },
-          }],
-        });
+        await ratingChoice.update({ embeds: [gameRatingEmbedBuilder(game, game.ratings[0])] });
       } catch {
         await reply.edit({
           content: "Rating timed out. Type `/rategames` again to resume.",

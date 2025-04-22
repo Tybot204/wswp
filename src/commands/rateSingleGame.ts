@@ -10,7 +10,7 @@ import {
 import { Command, prisma } from "..";
 
 import { gameAutocomplete } from "../util/gameAutocomplete";
-import { gameDetailsEmbedBuilder } from "../util/embedTemplates";
+import { gameRatingEmbedBuilder } from "../util/embedTemplates";
 import { registerUser } from "../util/registerUser";
 
 const builder = new SlashCommandBuilder()
@@ -51,7 +51,7 @@ export const rateSingleGame: Command = {
           gameResource: true,
           ratings: {
             select: { score: true },
-            where: { user: { discordId: user.id } },
+            where: { user: { id: user.id } },
           },
         },
       });
@@ -102,10 +102,7 @@ export const rateSingleGame: Command = {
           type: ComponentType.ActionRow,
         },
       ],
-      embeds: [{
-        ...gameDetailsEmbedBuilder(game),
-        footer: { text: "Rate the game from 1 to 5." },
-      }],
+      embeds: [gameRatingEmbedBuilder(game, game.ratings[0])],
       flags: MessageFlags.Ephemeral,
     });
 
@@ -115,21 +112,21 @@ export const rateSingleGame: Command = {
         time: 30000,
       });
 
-      await prisma.rating.upsert({
+      const rating = await prisma.rating.upsert({
         create: {
           gameId: game.id,
           score: parseInt(ratingChoice.customId),
           userId: user.id,
         },
+        select: { score: true },
         update: { score: parseInt(ratingChoice.customId) },
         where: { gameId_userId: { gameId: game.id, userId: user.id } },
       });
 
       if (ratingChoice.customId != null) {
         await ratingChoice.update({
-          content: "Successfully rated game!",
           components: [],
-          embeds: [],
+          embeds: [gameRatingEmbedBuilder(game, rating, "Successfully rated game!")],
         });
       }
     } catch {
