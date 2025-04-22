@@ -48,6 +48,7 @@ export const whatShouldWePlay: Command = {
       take: 1,
       where: {
         game: {
+          guildId: guild.id,
           maxPlayers: ignoreMaxPlayers ? undefined : { gte: matchedPlayers.length },
           minPlayers: { lte: matchedPlayers.length },
           released: true,
