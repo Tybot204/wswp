@@ -129,10 +129,7 @@ export const addGame: Command = {
     const game = await prisma.game.create({ data: gameData, include: { gameResource: true } });
 
     await interaction.reply({
-      embeds: [{
-        ...gameDetailsEmbedBuilder(game),
-        footer: { text: "Game successfully added." },
-      }],
+      embeds: [gameDetailsEmbedBuilder(game, "Game successfully added.")],
     });
   },
 };
