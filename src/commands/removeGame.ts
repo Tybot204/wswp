@@ -7,9 +7,8 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 
-import { Game, Prisma } from "@prisma/client";
-
 import { Command, prisma } from "..";
+import { Game, Prisma } from "../../generated/prisma";
 import { gameAutocomplete } from "../util/gameAutocomplete";
 import { gameDetailsEmbedBuilder } from "../util/embedTemplates";
 

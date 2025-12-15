@@ -8,7 +8,6 @@ import {
 } from "discord.js";
 
 import { Command, prisma } from "..";
-
 import { gameRatingEmbedBuilder } from "../util/embedTemplates";
 import { registerUser } from "../util/registerUser";
 

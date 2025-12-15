@@ -5,7 +5,7 @@ import tseslint from "typescript-eslint";
 
 export default [
   { files: ["**/*.{js,mjs,cjs,ts}"] },
-  { ignores: ["**/build/**/*"] },
+  { ignores: ["**/build/**/*", "**/generated/**/*"] },
   { languageOptions: { globals: globals.node } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
@@ -14,5 +14,10 @@ export default [
     quotes: "double",
     semi: true,
   }),
-  { rules: { "sort-imports": ["error", { allowSeparatedGroups: true }] } },
+  {
+    rules: {
+      "max-len": ["error", { code: 120 }],
+      "sort-imports": ["error", { allowSeparatedGroups: true }],
+    },
+  },
 ];

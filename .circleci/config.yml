@@ -3,11 +3,11 @@ version: 2.1
 executors:
   node:
     docker:
-      - image: cimg/node:22.14
+      - image: cimg/node:24.12
   
   node-postgres:
     docker:
-      - image: cimg/node:22.14
+      - image: cimg/node:24.12
       - image: cimg/postgres:16.8
         environment:
           POSTGRES_DB: wswp
@@ -50,15 +50,11 @@ jobs:
 
       - run:
           name: Generate Prisma Types
-          command: yarn prisma generate
-
-      - run:
-          name: Run Prisma Migrations
-          command: yarn prisma migrate deploy
+          command: yarn prisma db push
 
       - run:
           name: Generate Prisma SQL Types
-          command: yarn prisma generate --sql
+          command: yarn types:generate
 
       - save_cache:
           key: v1-node-deps-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "prisma/schema.prisma" }}
@@ -68,6 +64,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
+            - generated
             - node_modules
 
   lint:

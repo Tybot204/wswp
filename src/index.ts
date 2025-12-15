@@ -13,10 +13,14 @@ import {
   Routes,
   SlashCommandBuilder,
 } from "discord.js";
-import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import SteamAPI from "steamapi";
 
+import { PrismaClient } from "../generated/prisma";
 import { commandMap } from "./commands";
+
+console.log(process.env.NODE_ENV);
+console.log(process.env.DATABASE_URL);
 
 export interface Command {
   builder: SlashCommandBuilder;
@@ -25,7 +29,8 @@ export interface Command {
   autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
 }
 
-export const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+export const prisma = new PrismaClient({ adapter });
 
 export const steam = new SteamAPI(process.env.STEAM_API_KEY!);
 

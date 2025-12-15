@@ -9,8 +9,10 @@
 /coverage
 junit.xml
 
-# production
+# generated
 /build
+/generated
+tsconfig.tsbuildinfo
 
 # misc
 /.vscode

@@ -1,6 +1,6 @@
 import { APIEmbed } from "discord.js";
 
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../../generated/prisma";
 
 type GameWithGameResource = Prisma.GameGetPayload<{ include: { gameResource: true } }>;
 type RatingScore = Prisma.RatingGetPayload<{ select: { score: true } }>;

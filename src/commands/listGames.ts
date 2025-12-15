@@ -1,8 +1,19 @@
-import { APIEmbed, ButtonBuilder, ButtonStyle, ComponentType, InteractionContextType, MessageFlags, SlashCommandBuilder } from "discord.js";
-
-import { getGamesByAvgRating, getRatedGamesByAvgRating, getRatedGamesByAvgRatingCount } from "@prisma/client/sql";
+import {
+  APIEmbed,
+  ButtonBuilder,
+  ButtonStyle,
+  ComponentType,
+  InteractionContextType,
+  MessageFlags,
+  SlashCommandBuilder,
+} from "discord.js";
 
 import { Command, prisma } from "..";
+import {
+  getGamesByAvgRating,
+  getRatedGamesByAvgRating,
+  getRatedGamesByAvgRatingCount,
+} from "../../generated/prisma/sql";
 
 const builder = new SlashCommandBuilder()
   .setName("listgames")
@@ -60,7 +71,9 @@ export const listGames: Command = {
     }
 
     if (games.length === 0) {
-      await interaction.reply({ content: "No games found. Type `/addgame` to add one!", flags: MessageFlags.Ephemeral });
+      await interaction.reply({
+        content: "No games found. Type `/addgame` to add one!", flags: MessageFlags.Ephemeral,
+      });
       return;
     };
 
@@ -95,7 +108,9 @@ export const listGames: Command = {
     let currentPage = 1;
     while (true) {
       try {
-        const listChoice = await reply.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 30000 });
+        const listChoice = await reply.awaitMessageComponent({
+          filter: i => i.user.id === interaction.user.id, time: 30000,
+        });
 
         currentPage = listChoice.customId === "next" ? currentPage + 1 : currentPage - 1;
 

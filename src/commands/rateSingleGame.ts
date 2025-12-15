@@ -8,7 +8,6 @@ import {
 } from "discord.js";
 
 import { Command, prisma } from "..";
-
 import { gameAutocomplete } from "../util/gameAutocomplete";
 import { gameRatingEmbedBuilder } from "../util/embedTemplates";
 import { registerUser } from "../util/registerUser";

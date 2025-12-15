@@ -1,9 +1,0 @@
-# Ignore everything except what we need to build an image
-/*
-
-!/build
-!/prisma
-!.dockerignore
-!Dockerfile
-!package.json
-!yarn.lock

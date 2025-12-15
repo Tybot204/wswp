@@ -1,7 +1,10 @@
-import { GamePlatform, PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { faker } from "@faker-js/faker";
 
-const prisma = new PrismaClient();
+import { GamePlatform, PrismaClient } from "../generated/prisma";
+
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 
 const NUM_USERS = 10;
 const NUM_GUILDS = 3;
@@ -22,11 +25,18 @@ const NUM_RATINGS_PER_USER = 5;
   const steamIdGTFO = "493520";
   const gameResourceGTFO = await prisma.gameResource.upsert({
     create: {
-      bannerImageURL: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamIdGTFO}/header.jpg?t=1728027032`,
-      description: "GTFO is a hardcore cooperative horror shooter that throws you from gripping suspense to explosive action in a heartbeat. Stealth, strategy, and teamwork are necessary to survive in your deadly, underground prison. Work together or die together.",
+      bannerImageURL:
+        `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamIdGTFO}`
+        + `/header.jpg?t=1728027032`,
+      description:
+        "GTFO is a hardcore cooperative horror shooter that throws you from gripping suspense to explosive action "
+        + "in a heartbeat. Stealth, strategy, and teamwork are necessary to survive in your deadly, underground "
+        + "prison. Work together or die together.",
       externalId: steamIdGTFO,
       platform: GamePlatform.STEAM,
-      thumbnailImageURL: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamIdGTFO}/a90c1895f07c2ea0075f3295540701a17981a83a/capsule_231x87.jpg?t=1728027032`,
+      thumbnailImageURL:
+        `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamIdGTFO}`
+        + `/a90c1895f07c2ea0075f3295540701a17981a83a/capsule_231x87.jpg?t=1728027032`,
     },
     update: {},
     where: { externalIdPlatform: { externalId: steamIdGTFO, platform: GamePlatform.STEAM } },
@@ -35,11 +45,17 @@ const NUM_RATINGS_PER_USER = 5;
   const steamIdMonaco = "113020";
   const gameResourceMonaco = await prisma.gameResource.upsert({
     create: {
-      bannerImageURL: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamIdMonaco}/header.jpg?t=1741126657`,
-      description: "Monaco: What's Yours Is Mine is a single player or co-op heist game. Assemble a crack team of thieves, case the joint, and pull off the perfect heist.",
+      bannerImageURL:
+        `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamIdMonaco}`
+        + `/header.jpg?t=1741126657`,
+      description:
+        "Monaco: What's Yours Is Mine is a single player or co-op heist game. "
+        + "Assemble a crack team of thieves, case the joint, and pull off the perfect heist.",
       externalId: steamIdMonaco,
       platform: GamePlatform.STEAM,
-      thumbnailImageURL: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamIdMonaco}/capsule_231x87.jpg?t=1741126657`,
+      thumbnailImageURL:
+        `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamIdMonaco}`
+        + `/capsule_231x87.jpg?t=1741126657`,
     },
     update: {},
     where: { externalIdPlatform: { externalId: steamIdMonaco, platform: GamePlatform.STEAM } },
@@ -102,9 +118,8 @@ const NUM_RATINGS_PER_USER = 5;
   });
 })().then(async () => {
   await prisma.$disconnect();
-})
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+}).catch(async (e) => {
+  console.error(e);
+  await prisma.$disconnect();
+  process.exit(1);
+});
