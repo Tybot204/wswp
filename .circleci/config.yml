@@ -8,7 +8,7 @@ executors:
   node-postgres:
     docker:
       - image: cimg/node:24.12
-      - image: cimg/postgres:16.8
+      - image: cimg/postgres:18.0
         environment:
           POSTGRES_DB: wswp
 
