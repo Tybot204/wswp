@@ -13,7 +13,9 @@ const NUM_RATINGS_PER_USER = 5;
 
 (async () => {
   const users = await prisma.user.createManyAndReturn({
-    data: [...Array(NUM_USERS)].map(() => { return { discordId: faker.string.numeric(18) }; }),
+    data: [...Array(NUM_USERS)].map(() => {
+      return { discordId: faker.string.numeric(18) };
+    }),
   });
 
   const guildIds = [...Array(NUM_GUILDS)].map(() => {
@@ -114,7 +116,9 @@ const NUM_RATINGS_PER_USER = 5;
       });
     })].flat(),
   });
-})().then(async () => { await prisma.$disconnect(); }).catch(async (e) => {
+})().then(async () => {
+  await prisma.$disconnect();
+}).catch(async (e) => {
   console.error(e);
   await prisma.$disconnect();
   process.exit(1);
