@@ -9,8 +9,8 @@ import {
 
 import { Command, prisma } from "..";
 import { Game, Prisma } from "../../generated/prisma";
-import { gameAutocomplete } from "../util/gameAutocomplete";
 import { gameDetailsEmbedBuilder } from "../util/embedTemplates";
+import { gameAutocomplete } from "../util/gameAutocomplete";
 
 type GameWithGameResource = Prisma.GameGetPayload<{ include: { gameResource: true } }>;
 
@@ -27,7 +27,9 @@ builder.addStringOption(option =>
 );
 
 export const removeGame: Command = {
+  autocomplete: gameAutocomplete,
   builder,
+
   execute: async (interaction) => {
     const guildId = interaction.guildId;
     if (!guildId) {
@@ -102,7 +104,7 @@ export const removeGame: Command = {
               removedGames.forEach(g => content += `\n${g.name} - (Players: ${g.minPlayers} - ${g.maxPlayers})`);
             }
 
-            await removeChoice.update({ content, components: [], embeds: [] });
+            await removeChoice.update({ components: [], content, embeds: [] });
             break;
           }
 
@@ -111,8 +113,8 @@ export const removeGame: Command = {
           });
         } catch {
           await reply.edit({
-            content: "Removal timed out. Type `/removegame` again to resume.",
             components: [],
+            content: "Removal timed out. Type `/removegame` again to resume.",
             embeds: [],
           });
           break;
@@ -120,6 +122,4 @@ export const removeGame: Command = {
       }
     }
   },
-
-  autocomplete: gameAutocomplete,
 };

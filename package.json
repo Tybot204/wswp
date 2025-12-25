@@ -5,6 +5,7 @@
     "db:generate": "prisma migrate dev --create-only",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "prisma db seed",
+    "db:sync": "prisma db push",
     "lint": "eslint .",
     "start": "node build/index.js",
     "start:dev": "NODE_ENV=development nodemon src/index.ts",
@@ -23,11 +24,19 @@
     "@types/node": "^24",
     "dotenv": "^17.2.3",
     "eslint": "^9.39.2",
+    "eslint-plugin-perfectionist": "^5.1.0",
     "globals": "^16.5.0",
     "nodemon": "^3.1.11",
     "prisma": "^7.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.49.0"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "^24.12",
+      "onFail": "download"
+    }
   }
 }

@@ -7,8 +7,8 @@ import { registerUser } from "../util/registerUser";
 
 interface SteamGameDetails {
   capsule_image: string;
-  is_free: boolean;
   header_image: string;
+  is_free: boolean;
   release_date: { coming_soon: boolean };
   short_description: string;
 }

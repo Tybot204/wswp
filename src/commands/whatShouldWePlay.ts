@@ -112,10 +112,10 @@ export const whatShouldWePlay: Command = {
       embeds: [{
         description: game.gameResource?.description ?? undefined,
         fields,
-        image: game.gameResource?.bannerImageURL ? { url: game.gameResource?.bannerImageURL } : undefined,
         footer: footerText ? { text: footerText } : undefined,
-        title: game.name,
+        image: game.gameResource?.bannerImageURL ? { url: game.gameResource?.bannerImageURL } : undefined,
         thumbnail: game.gameResource?.thumbnailImageURL ? { url: game.gameResource?.thumbnailImageURL } : undefined,
+        title: game.name,
         url: game.gameURL ?? undefined,
       }],
     });

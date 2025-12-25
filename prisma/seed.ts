@@ -1,5 +1,5 @@
-import { PrismaPg } from "@prisma/adapter-pg";
 import { faker } from "@faker-js/faker";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 import { GamePlatform, PrismaClient } from "../generated/prisma";
 
@@ -27,7 +27,7 @@ const NUM_RATINGS_PER_USER = 5;
     create: {
       bannerImageURL:
         `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamIdGTFO}`
-        + `/header.jpg?t=1728027032`,
+        + "/header.jpg?t=1728027032",
       description:
         "GTFO is a hardcore cooperative horror shooter that throws you from gripping suspense to explosive action "
         + "in a heartbeat. Stealth, strategy, and teamwork are necessary to survive in your deadly, underground "
@@ -36,7 +36,7 @@ const NUM_RATINGS_PER_USER = 5;
       platform: GamePlatform.STEAM,
       thumbnailImageURL:
         `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamIdGTFO}`
-        + `/a90c1895f07c2ea0075f3295540701a17981a83a/capsule_231x87.jpg?t=1728027032`,
+        + "/a90c1895f07c2ea0075f3295540701a17981a83a/capsule_231x87.jpg?t=1728027032",
     },
     update: {},
     where: { externalIdPlatform: { externalId: steamIdGTFO, platform: GamePlatform.STEAM } },
@@ -47,7 +47,7 @@ const NUM_RATINGS_PER_USER = 5;
     create: {
       bannerImageURL:
         `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamIdMonaco}`
-        + `/header.jpg?t=1741126657`,
+        + "/header.jpg?t=1741126657",
       description:
         "Monaco: What's Yours Is Mine is a single player or co-op heist game. "
         + "Assemble a crack team of thieves, case the joint, and pull off the perfect heist.",
@@ -55,7 +55,7 @@ const NUM_RATINGS_PER_USER = 5;
       platform: GamePlatform.STEAM,
       thumbnailImageURL:
         `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${steamIdMonaco}`
-        + `/capsule_231x87.jpg?t=1741126657`,
+        + "/capsule_231x87.jpg?t=1741126657",
     },
     update: {},
     where: { externalIdPlatform: { externalId: steamIdMonaco, platform: GamePlatform.STEAM } },
@@ -67,7 +67,7 @@ const NUM_RATINGS_PER_USER = 5;
         return {
           createdById: faker.helpers.arrayElement(users).id,
           guildId: faker.helpers.arrayElement(guildIds),
-          maxPlayers: faker.number.int({ min: 1, max: 16 }),
+          maxPlayers: faker.number.int({ max: 16, min: 1 }),
           name: faker.commerce.productName(),
         };
       }),
@@ -110,7 +110,7 @@ const NUM_RATINGS_PER_USER = 5;
         usedGames.push(game);
         return {
           gameId: game.id,
-          score: faker.number.int({ min: 1, max: 5 }),
+          score: faker.number.int({ max: 5, min: 1 }),
           userId: users[i].id,
         };
       });

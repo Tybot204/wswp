@@ -3,6 +3,7 @@ if (process.env.NODE_ENV === "development") {
   require("dotenv").config();
 }
 
+import { PrismaPg } from "@prisma/adapter-pg";
 import {
   AutocompleteInteraction,
   ChatInputCommandInteraction,
@@ -13,7 +14,6 @@ import {
   Routes,
   SlashCommandBuilder,
 } from "discord.js";
-import { PrismaPg } from "@prisma/adapter-pg";
 import SteamAPI from "steamapi";
 
 import { PrismaClient } from "../generated/prisma";
@@ -23,16 +23,15 @@ console.log(process.env.NODE_ENV);
 console.log(process.env.DATABASE_URL);
 
 export interface Command {
+  autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
   builder: SlashCommandBuilder;
   execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
-
-  autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
 }
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 export const prisma = new PrismaClient({ adapter });
 
-export const steam = new SteamAPI(process.env.STEAM_API_KEY!);
+export const steam = new SteamAPI(process.env.STEAM_API_KEY ?? false);
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -51,11 +50,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
 client.login(process.env.DISCORD_TOKEN);
 
 // Register all application commands
-const rest = new REST().setToken(process.env.DISCORD_TOKEN!);
+const rest = new REST().setToken(process.env.DISCORD_TOKEN ?? "");
 (async () => {
   try {
     await rest.put(
-      Routes.applicationCommands(process.env.DISCORD_CLIENT_ID!),
+      Routes.applicationCommands(process.env.DISCORD_CLIENT_ID ?? ""),
       { body: Object.values(commandMap).map(command => command.builder.toJSON()) },
     );
     console.log("Successfully registered application commands.");
