@@ -39,7 +39,6 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-node-deps-{{ checksum "package.json" }}-{{ checksum "pnpm-lock.yaml" }}-{{ checksum "prisma/schema.prisma" }}
             - v1-node-deps-{{ checksum "package.json" }}-{{ checksum "pnpm-lock.yaml" }}
             - v1-node-deps-{{ checksum "package.json" }}
             - v1-node-deps
@@ -57,7 +56,7 @@ jobs:
           command: pnpm types:generate
 
       - save_cache:
-          key: v1-node-deps-{{ checksum "package.json" }}-{{ checksum "pnpm-lock.yaml" }}-{{ checksum "prisma/schema.prisma" }}
+          key: v1-node-deps-{{ checksum "package.json" }}-{{ checksum "pnpm-lock.yaml" }}
           paths:
             - node_modules
 
