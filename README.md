@@ -6,60 +6,59 @@ A simple Discord bot to help you find what game to play with your friends. Allow
 
 ## Development Setup
 
-1. Install Node (see .nvmrc for current version)
+1. Install [pnpm standalone (or system package manager)](https://pnpm.io/installation#using-a-standalone-script)
 
-2. Install Yarn Classic
+   **NOTE:** Do not install via NPM package manager. This project uses pnpm to manage Node versions.
 
-3. Install PostgreSQL
+2. Install PostgreSQL
 
-4. Install dependencies
-
-   ```bash
-   yarn
-   ```
-
-5. Generate Prisma types
+3. Install dependencies
 
    ```bash
-   yarn prisma generate
+   pnpm install
    ```
 
-6. Create a database
+4. Create a database
 
    ```bash
    psql -U postgres -c "CREATE DATABASE wswp"
    ```
 
-7. Create a `.env` file with the following content:
+5. Create a `.env` file with the following content:
 
    ```bash
-   DATABASE_URL="postgresql://postgres@localhost:5432/wswp"
+   DATABASE_URL="postgresql://postgres@localhost:5432/wswp?schema=public"
    DISCORD_CLIENT_ID=your-discord-client-id
    DISCORD_TOKEN=your-discord-client-token
+   STEAM_API_KEY=your-steam-api-key
    ```
 
-8. Migrate the database
+6. Sync database to Prisma schema
 
    ```bash
-   yarn prisma migrate dev
+   pnpm db:sync
    ```
 
-9. Build the project
-  
-    ```bash
-    yarn build
-    ```
+7. Generate Prisma types
 
-10. Start the bot
+   ```bash
+   pnpm types:generate
+   ```
 
-    ```bash
-    yarn start
-    ```
+8. Start the bot
+
+   ```bash
+   pnpm start:dev
+   ```
 
 ## Development Commands
 
-* `yarn lint` - Lint the project using ESLint.
 * `yarn build` - Build the project and output to the `./build` directory.
+* `yarn db:generate` - Create a new migration based on the current Prisma schema.
+* `yarn db:migrate` - Apply existing migrations to the database in order of creation.
+* `yarn db:seed` - Seed the database with initial data as defined in `./prisma/seed.ts`.
+* `yarn db:sync` - Sync the database schema to match the Prisma schema without running migrations.
+* `yarn lint` - Lint the project using ESLint.
 * `yarn start` - Run code currently built in the `./build` directory.
-* `yarn prisma generate` - Generate Prisma types. Useful anytime you change `./prisma/schema.prisma`.
-* `yarn prisma migrate dev` - Run the existing migrations against the database and generate a new migration if new changes exist.
+* `yarn start:dev` - Start the project in development mode with hot-reloading using `nodemon`.
+* `yarn types:generate` - Generate TypeScript types from the Prisma schema. Useful anytime you change `./prisma/schema.prisma` or add TypeSQL files to `./prisma/sql`.
