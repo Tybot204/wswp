@@ -1,7 +1,7 @@
 allowBuilds:
   "@prisma/engines": true
   prisma: true
+nodeVersion: 24.12.0
 onlyBuiltDependencies:
   - "@prisma/engines"
   - prisma
-nodeVersion: 24.12.0
