@@ -48,11 +48,11 @@ jobs:
           command: pnpm install
 
       - run:
-          name: Generate Prisma Types
-          command: pnpm prisma db push
+          name: Sync Database to Prisma Schema
+          command: pnpm db:sync
 
       - run:
-          name: Generate Prisma SQL Types
+          name: Generate Prisma Types
           command: pnpm types:generate
 
       - save_cache:

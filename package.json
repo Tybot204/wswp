@@ -5,6 +5,7 @@
     "db:generate": "prisma migrate dev --create-only",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "prisma db seed",
+    "db:sync": "prisma db push",
     "lint": "eslint .",
     "start": "node build/index.js",
     "start:dev": "NODE_ENV=development nodemon src/index.ts",
