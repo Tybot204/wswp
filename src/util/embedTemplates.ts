@@ -15,8 +15,8 @@ export const gameDetailsEmbedBuilder = (game: GameWithGameResource, footerText?:
     ],
     footer: footerText ? { text: footerText } : undefined,
     image: game.gameResource?.bannerImageURL ? { url: game.gameResource?.bannerImageURL } : undefined,
-    title: game.name,
     thumbnail: game.gameResource?.thumbnailImageURL ? { url: game.gameResource?.thumbnailImageURL } : undefined,
+    title: game.name,
     url: game.gameURL ?? undefined,
   };
 };
@@ -24,7 +24,7 @@ export const gameDetailsEmbedBuilder = (game: GameWithGameResource, footerText?:
 export const gameRatingEmbedBuilder = (
   game: GameWithGameResource,
   rating?: RatingScore,
-  footerText: string = "Rate the game from 1 to 5.",
+  footerText = "Rate the game from 1 to 5.",
 ) => {
   const embed = gameDetailsEmbedBuilder(game, footerText);
   embed.fields?.push({ name: "Your Rating", value: rating?.score.toString() ?? "Not rated" });

@@ -8,8 +8,8 @@ import {
 } from "discord.js";
 
 import { Command, prisma } from "..";
-import { gameAutocomplete } from "../util/gameAutocomplete";
 import { gameRatingEmbedBuilder } from "../util/embedTemplates";
+import { gameAutocomplete } from "../util/gameAutocomplete";
 import { registerUser } from "../util/registerUser";
 
 const builder = new SlashCommandBuilder()
@@ -26,7 +26,9 @@ builder.addStringOption(option =>
 );
 
 export const rateSingleGame: Command = {
+  autocomplete: gameAutocomplete,
   builder,
+
   execute: async (interaction) => {
     const guildId = interaction.guildId;
     if (!guildId) {
@@ -45,7 +47,6 @@ export const rateSingleGame: Command = {
     let game;
     try {
       game = await prisma.game.findUnique({
-        where: { id: name },
         include: {
           gameResource: true,
           ratings: {
@@ -53,6 +54,7 @@ export const rateSingleGame: Command = {
             where: { user: { id: user.id } },
           },
         },
+        where: { id: name },
       });
     } catch {
       await interaction.reply({
@@ -130,12 +132,10 @@ export const rateSingleGame: Command = {
       }
     } catch {
       await reply.edit({
-        content: "Rating timed out. Type `/ratesinglegame` again to resume.",
         components: [],
+        content: "Rating timed out. Type `/ratesinglegame` again to resume.",
         embeds: [],
       });
     }
   },
-
-  autocomplete: gameAutocomplete,
 };

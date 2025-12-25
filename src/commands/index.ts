@@ -6,7 +6,7 @@ import { rateSingleGame } from "./rateSingleGame";
 import { removeGame } from "./removeGame";
 import { whatShouldWePlay } from "./whatShouldWePlay";
 
-export const commandMap: { [key: string]: Command } = {
+export const commandMap: Record<string, Command> = {
   addgame: addGame,
   listgames: listGames,
   rategames: rateGames,

@@ -85,15 +85,15 @@ export const rateGames: Command = {
 
         game = games.shift();
         if (!game) {
-          await ratingChoice.update({ content: "Finished rating all games!", components: [], embeds: [] });
+          await ratingChoice.update({ components: [], content: "Finished rating all games!", embeds: [] });
           break;
         }
 
         await ratingChoice.update({ embeds: [gameRatingEmbedBuilder(game, game.ratings[0])] });
       } catch {
         await reply.edit({
-          content: "Rating timed out. Type `/rategames` again to resume.",
           components: [],
+          content: "Rating timed out. Type `/rategames` again to resume.",
           embeds: [],
         });
         break;

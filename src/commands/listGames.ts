@@ -99,8 +99,8 @@ export const listGames: Command = {
     if (!nextGame) buttonNext.setDisabled(true);
 
     const reply = await interaction.reply({
-      content: contentBuilder(totalGames, 1),
       components: [{ components: [buttonBack, buttonNext], type: ComponentType.ActionRow }],
+      content: contentBuilder(totalGames, 1),
       embeds: await Promise.all(games.map(game => gameEmbedBuilder(game))),
       flags: MessageFlags.Ephemeral,
     });
@@ -127,12 +127,12 @@ export const listGames: Command = {
         buttonNext.setDisabled(!nextGame);
 
         await listChoice.update({
-          content: contentBuilder(totalGames, currentPage),
           components: [{ components: [buttonBack, buttonNext], type: ComponentType.ActionRow }],
+          content: contentBuilder(totalGames, currentPage),
           embeds: await Promise.all(games.map(game => gameEmbedBuilder(game))),
         });
       } catch {
-        await reply.edit({ content: "List timed out. Type `/listgames` again to restart.", components: [] });
+        await reply.edit({ components: [], content: "List timed out. Type `/listgames` again to restart." });
         break;
       }
     }

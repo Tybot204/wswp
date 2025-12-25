@@ -1,23 +1,24 @@
-import globals from "globals";
-import pluginJs from "@eslint/js";
+import eslint from "@eslint/js";
 import stylistic from "@stylistic/eslint-plugin";
+import perfectionist from "eslint-plugin-perfectionist";
+import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
 
-export default [
-  { files: ["**/*.{js,mjs,cjs,ts}"] },
-  { ignores: ["**/build/**/*", "**/generated/**/*"] },
-  { languageOptions: { globals: globals.node } },
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
+export default defineConfig(
+  eslint.configs.recommended,
+  tseslint.configs.strict,
+  tseslint.configs.stylistic,
+  perfectionist.configs["recommended-alphabetical"],
   stylistic.configs.customize({
     braceStyle: "1tbs",
     quotes: "double",
     semi: true,
   }),
+  { ignores: ["**/build/**/*", "**/generated/**/*"] },
   {
+    plugins: { "@stylistic": stylistic },
     rules: {
-      "max-len": ["error", { code: 120 }],
-      "sort-imports": ["error", { allowSeparatedGroups: true }],
+      "@stylistic/max-len": ["error", { code: 120 }],
     },
   },
-];
+);
