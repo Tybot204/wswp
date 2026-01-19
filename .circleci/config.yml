@@ -35,13 +35,17 @@ jobs:
       - save_cache:
           key: v1-node-deps-{{ checksum "package.json" }}-{{ checksum "pnpm-lock.yaml" }}
           paths:
-            - "**/node_modules"
+            - apps/discord/node_modules
+            - node_modules
+            - packages/database/node_modules
 
       - persist_to_workspace:
           root: .
           paths:
-            - "**/generated"
-            - "**/node_modules"
+            - apps/discord/node_modules
+            - generated
+            - node_modules
+            - packages/database/node_modules
 
   lint:
     executor: node
@@ -64,15 +68,10 @@ jobs:
           at: .
 
       - run:
-          name: Build Project for Production
+          name: Validate Project Builds for Production
           command: pnpm validate
           environment:
             NODE_ENV: production
-
-      - persist_to_workspace:
-          root: .
-          paths:
-            - build
 
 workflows:
   lint-validate:
