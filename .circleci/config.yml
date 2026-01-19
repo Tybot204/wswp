@@ -13,25 +13,6 @@ executors:
           POSTGRES_DB: wswp
 
 jobs:
-  build:
-    executor: node
-    steps:
-      - checkout
-
-      - attach_workspace:
-          at: .
-
-      - run:
-          name: Build Project for Production
-          command: pnpm build
-          environment:
-            NODE_ENV: production
-
-      - persist_to_workspace:
-          root: .
-          paths:
-            - build
-
   install-dependencies:
     executor: node-postgres
     steps:
@@ -48,23 +29,23 @@ jobs:
           command: pnpm install
 
       - run:
-          name: Sync Database to Prisma Schema
-          command: pnpm db:sync
-
-      - run:
-          name: Generate Prisma Types
-          command: pnpm types:generate
+          name: Sync Database and Generate Prisma Types
+          command: pnpm dev:setup
 
       - save_cache:
           key: v1-node-deps-{{ checksum "package.json" }}-{{ checksum "pnpm-lock.yaml" }}
           paths:
+            - apps/discord/node_modules
             - node_modules
+            - packages/database/node_modules
 
       - persist_to_workspace:
           root: .
           paths:
-            - generated
+            - apps/discord/node_modules
             - node_modules
+            - packages/database/generated
+            - packages/database/node_modules
 
   lint:
     executor: node
@@ -78,22 +59,36 @@ jobs:
           name: Lint Project
           command: pnpm lint
 
+  validate:
+    executor: node
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: .
+
+      - run:
+          name: Validate Project Builds for Production
+          command: pnpm validate
+          environment:
+            NODE_ENV: production
+
 workflows:
-  build-lint:
+  lint-validate:
     jobs:
       - install-dependencies:
           filters:
             tags:
               only: /.*/
 
-      - build:
+      - lint:
           requires:
             - install-dependencies
           filters:
             tags:
               only: /.*/
 
-      - lint:
+      - validate:
           requires:
             - install-dependencies
           filters:

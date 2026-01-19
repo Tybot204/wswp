@@ -1,34 +1,20 @@
 {
   "license": "UNLICENSED",
+  "private": true,
   "scripts": {
-    "build": "tsc",
-    "db:generate": "prisma migrate dev --create-only",
-    "db:migrate": "prisma migrate deploy",
-    "db:seed": "prisma db seed",
-    "db:sync": "prisma db push",
-    "lint": "eslint .",
-    "start": "node build/index.js",
-    "start:dev": "NODE_ENV=development nodemon src/index.ts",
-    "types:generate": "prisma generate --sql"
-  },
-  "dependencies": {
-    "@prisma/adapter-pg": "^7.1.0",
-    "@prisma/client": "^7.1.0",
-    "discord.js": "^14.18.0",
-    "steamapi": "3.0.12"
+    "lint": "eslint",
+    "dev:setup": "pnpm --filter database db:sync && pnpm --filter database db:generate",
+    "validate": "tsc --noemit"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
-    "@faker-js/faker": "^10.1.0",
     "@stylistic/eslint-plugin": "^5.6.1",
     "@types/node": "^24",
     "dotenv": "^17.2.3",
+    "esbuild": "^0.27.2",
     "eslint": "^9.39.2",
     "eslint-plugin-perfectionist": "^5.1.0",
-    "globals": "^16.5.0",
-    "nodemon": "^3.1.11",
-    "prisma": "^7.1.0",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.49.0"
   },

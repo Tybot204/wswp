@@ -1,6 +1,6 @@
-import { AutocompleteInteraction } from "discord.js";
+import type { AutocompleteInteraction } from "discord.js";
 
-import { prisma } from "..";
+import { prisma } from "database";
 
 export const gameAutocomplete = async (interaction: AutocompleteInteraction) => {
   const guildId = interaction.guildId;

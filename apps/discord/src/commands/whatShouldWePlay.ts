@@ -1,6 +1,9 @@
-import { APIEmbedField, InteractionContextType, MessageFlags, SlashCommandBuilder } from "discord.js";
+import type { APIEmbedField } from "discord.js";
 
-import { Command, prisma } from "..";
+import { prisma } from "database";
+import { InteractionContextType, MessageFlags, SlashCommandBuilder } from "discord.js";
+
+import type { Command } from "../index.js";
 
 const builder = new SlashCommandBuilder()
   .setName("whatshouldweplay")
@@ -57,7 +60,7 @@ export const whatShouldWePlay: Command = {
       },
     });
 
-    if (totalRatings[0]._avg.score === null) {
+    if (!totalRatings[0] || totalRatings[0]._avg.score === null) {
       await interaction.reply({
         content: "No ratings found for the given number of players.",
         flags: MessageFlags.Ephemeral,

@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "ESNext"
+    ],
+    "outDir": "./build",
+    "rootDir": "./src",
+    "types": [
+      "node"
+    ],
+  },
+  "extends": "../../tsconfig.json",
+  "include": [
+    "src"
+  ]
+}

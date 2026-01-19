@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./build",
+    "rootDir": "./src",
+  },
+  "extends": "../../tsconfig.json",
+  "include": [
+    "src"
+  ],
+}

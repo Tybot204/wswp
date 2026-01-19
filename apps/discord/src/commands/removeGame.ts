@@ -1,3 +1,6 @@
+import type { Game, Prisma } from "database";
+
+import { prisma } from "database";
 import {
   ButtonBuilder,
   ButtonStyle,
@@ -7,8 +10,8 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 
-import { Command, prisma } from "..";
-import { Game, Prisma } from "../../generated/prisma";
+import type { Command } from "..";
+
 import { gameDetailsEmbedBuilder } from "../util/embedTemplates";
 import { gameAutocomplete } from "../util/gameAutocomplete";
 

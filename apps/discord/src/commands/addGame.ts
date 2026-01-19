@@ -1,7 +1,11 @@
+import type { Prisma } from "database";
+
+import { GamePlatform, prisma } from "database";
 import { InteractionContextType, MessageFlags, SlashCommandBuilder } from "discord.js";
 
-import { Command, prisma, steam } from "..";
-import { GamePlatform, Prisma } from "../../generated/prisma";
+import type { Command } from "..";
+
+import { steam } from "..";
 import { gameDetailsEmbedBuilder } from "../util/embedTemplates";
 import { registerUser } from "../util/registerUser";
 
