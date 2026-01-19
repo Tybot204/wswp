@@ -1,5 +1,7 @@
+import type { APIEmbed } from "discord.js";
+
+import { getGamesByAvgRating, getRatedGamesByAvgRating, getRatedGamesByAvgRatingCount, prisma } from "database";
 import {
-  APIEmbed,
   ButtonBuilder,
   ButtonStyle,
   ComponentType,
@@ -8,12 +10,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 
-import { Command, prisma } from "..";
-import {
-  getGamesByAvgRating,
-  getRatedGamesByAvgRating,
-  getRatedGamesByAvgRatingCount,
-} from "../../generated/prisma/sql";
+import type { Command } from "..";
 
 const builder = new SlashCommandBuilder()
   .setName("listgames")

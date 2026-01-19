@@ -1,6 +1,9 @@
-import { APIEmbedField, InteractionContextType, MessageFlags, SlashCommandBuilder } from "discord.js";
+import type { APIEmbedField } from "discord.js";
 
-import { Command, prisma } from "..";
+import { prisma } from "database";
+import { InteractionContextType, MessageFlags, SlashCommandBuilder } from "discord.js";
+
+import type { Command } from "../index.js";
 
 const builder = new SlashCommandBuilder()
   .setName("whatshouldweplay")

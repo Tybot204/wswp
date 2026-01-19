@@ -1,6 +1,5 @@
-import { User } from "discord.js";
-
-import { prisma } from "..";
+import { prisma } from "database";
+import { type User } from "discord.js";
 
 export const registerUser = async (user: User) => {
   const existingUser = await prisma.user.findUnique({ where: { discordId: user.id } });

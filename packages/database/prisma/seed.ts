@@ -3,7 +3,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 
 import { GamePlatform, PrismaClient } from "../generated/prisma";
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg({ connectionString: process.env["DATABASE_URL"] });
 const prisma = new PrismaClient({ adapter });
 
 const NUM_USERS = 10;
@@ -105,13 +105,15 @@ const NUM_RATINGS_PER_USER = 5;
   await prisma.rating.createMany({
     data: [...[...Array(NUM_USERS / 2)].map((_, i) => {
       const usedGames: { id: string }[] = [];
+      const user = users[i];
+      if (!user) return [];
       return [...Array(NUM_RATINGS_PER_USER)].map(() => {
         const game = faker.helpers.arrayElement(games.filter(game => !usedGames.includes(game)));
         usedGames.push(game);
         return {
           gameId: game.id,
           score: faker.number.int({ max: 5, min: 1 }),
-          userId: users[i].id,
+          userId: user.id,
         };
       });
     })].flat(),

@@ -14,7 +14,7 @@ export default defineConfig(
     quotes: "double",
     semi: true,
   }),
-  { ignores: ["**/build/**/*", "**/generated/**/*"] },
+  { ignores: ["**/build/", "**/generated/"] },
   {
     plugins: { "@stylistic": stylistic },
     rules: {

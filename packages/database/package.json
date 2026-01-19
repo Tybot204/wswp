@@ -1,0 +1,32 @@
+{
+  "license": "UNLICENSED",
+  "name": "database",
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^10.1.0",
+    "@types/pg": "^8.16.0",
+    "prisma": "^7.2.0"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "^24.12",
+      "onFail": "download"
+    }
+  },
+  "main": "./src/index.ts",
+  "scripts": {
+    "build": "tsc --noemit && esbuild ./src/index.ts --bundle --outdir=./build --platform=node --packages=external --sourcemap",
+    "db:deploy": "prisma migrate deploy",
+    "db:generate": "prisma generate --sql",
+    "db:migrate": "prisma migrate dev --create-only",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio",
+    "db:sync": "prisma db push"
+  },
+  "type": "module"
+}

@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "outDir": "./build",
+    "rootDir": "./src",
+    "target": "esnext"
+  },
+  "extends": "../../tsconfig.json",
+  "include": [
+    "src"
+  ],
+}
