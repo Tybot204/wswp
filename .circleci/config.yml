@@ -48,12 +48,8 @@ jobs:
           command: pnpm install
 
       - run:
-          name: Sync Database to Prisma Schema
-          command: pnpm db:sync
-
-      - run:
-          name: Generate Prisma Types
-          command: pnpm types:generate
+          name: Sync Database and Generate Prisma Types
+          command: pnpm dev:setup
 
       - save_cache:
           key: v1-node-deps-{{ checksum "package.json" }}-{{ checksum "pnpm-lock.yaml" }}
