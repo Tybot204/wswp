@@ -3,11 +3,8 @@
     "lib": [
       "ESNext"
     ],
-    "module": "esnext",
-    "moduleResolution": "bundler",
     "outDir": "./build",
     "rootDir": "./src",
-    "target": "esnext",
     "types": [
       "node"
     ],
