@@ -76,7 +76,7 @@ export const listGames: Command = {
 
     const totalGames = userIds.length === 0
       ? await prisma.game.count({ where: { guildId } })
-      : Number((await prisma.$queryRawTyped(getRatedGamesByAvgRatingCount(guildId, userIds)))[0].count);
+      : Number((await prisma.$queryRawTyped(getRatedGamesByAvgRatingCount(guildId, userIds)))[0]?.count ?? 0);
 
     const buttonBack = new ButtonBuilder()
       .setCustomId("back")

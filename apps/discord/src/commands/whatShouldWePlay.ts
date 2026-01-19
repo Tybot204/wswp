@@ -60,7 +60,7 @@ export const whatShouldWePlay: Command = {
       },
     });
 
-    if (totalRatings[0]._avg.score === null) {
+    if (!totalRatings[0] || totalRatings[0]._avg.score === null) {
       await interaction.reply({
         content: "No ratings found for the given number of players.",
         flags: MessageFlags.Ephemeral,

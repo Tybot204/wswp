@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
     "esModuleInterop": true,
+    // TODO: Enable this after using Prisma strictUndefinedChecks experimental
+    //       feature to remove undefined usage in queries.
     // "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
@@ -11,13 +13,13 @@
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
-    // "noUncheckedIndexedAccess": true,
+    "noUncheckedIndexedAccess": true,
     "noUncheckedSideEffectImports": true,
     "noUnusedLocals": true,
     "resolveJsonModule": true,
     "sourceMap": true,
     "skipLibCheck": true,
     "strict": true,
-    // "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true
   },
 }
