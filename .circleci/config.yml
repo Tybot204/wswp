@@ -43,8 +43,8 @@ jobs:
           root: .
           paths:
             - apps/discord/node_modules
-            - generated
             - node_modules
+            - packages/database/generated
             - packages/database/node_modules
 
   lint:
