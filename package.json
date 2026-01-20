@@ -2,8 +2,8 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "lint": "eslint",
     "dev:setup": "pnpm --filter database db:sync && pnpm --filter database db:generate",
+    "lint": "eslint",
     "validate": "tsc --noemit"
   },
   "devDependencies": {
