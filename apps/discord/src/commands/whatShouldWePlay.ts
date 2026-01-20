@@ -110,8 +110,12 @@ export const whatShouldWePlay: Command = {
     });
     fields.push({ name: "Your Ratings:", value: ratingValues });
 
-    const numSmallerGames = await prisma.game.count({ where: { maxPlayers: { lt: matchedPlayers.length } } });
-    const numLargerGames = await prisma.game.count({ where: { minPlayers: { gt: matchedPlayers.length } } });
+    const numSmallerGames = await prisma.game.count({
+      where: { guildId: guild.id, maxPlayers: { lt: matchedPlayers.length } },
+    });
+    const numLargerGames = await prisma.game.count({
+      where: { guildId: guild.id, minPlayers: { gt: matchedPlayers.length } },
+    });
     let footerText: string | undefined = undefined;
     if (numSmallerGames > 0) {
       footerText = `There are ${numSmallerGames} game${numSmallerGames === 1 ? "" : "s"} that support fewer players.`;
